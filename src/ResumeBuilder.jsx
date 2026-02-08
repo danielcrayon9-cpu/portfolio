@@ -59,8 +59,13 @@ const STORAGE_KEY = 'resume-builder-data';
 
 const ResumeBuilder = () => {
     const [data, setData] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : initialData;
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : initialData;
+        } catch (error) {
+            console.error("Failed to parse saved data:", error);
+            return initialData;
+        }
     });
 
     useEffect(() => {
