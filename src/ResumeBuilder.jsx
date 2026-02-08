@@ -229,6 +229,8 @@ const ResumeBuilder = () => {
       --muted: #64748b;
       --accent: #38bdf8;
       --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #22c55e;
     }
     * { box-sizing: border-box; }
     body {
@@ -240,7 +242,12 @@ const ResumeBuilder = () => {
     }
     a { color: var(--accent); text-decoration: none; }
     .container { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
-    header { margin-bottom: 48px; display: flex; align-items: center; gap: 20px; }
+    header {
+      margin-bottom: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
     .header-content { flex: 1; }
     header h1 { font-size: 36px; margin: 0 0 8px; }
     header p { color: var(--muted); margin: 0; }
@@ -250,8 +257,11 @@ const ResumeBuilder = () => {
       height: 120px;
       border-radius: 50%;
       overflow: hidden;
-      border: 1px solid var(--border);
-      flex-shrink: 0;
+      border: 2px dashed var(--border);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .profile-picture-container img {
       width: 100%;
@@ -268,10 +278,69 @@ const ResumeBuilder = () => {
     .experience-content ul { margin: 12px 0 0; padding-left: 18px; }
     .experience-content li { margin-bottom: 6px; font-size: 14px; }
     .skill-list { display: flex; flex-wrap: wrap; gap: 10px; }
-    .skill { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--text); }
+    .skill { background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--text); }
     .project h3 { margin: 0 0 8px; font-size: 18px; }
     .project p { margin: 0; font-size: 14px; color: var(--muted); }
-    @media (max-width: 640px) { .experience-item { grid-template-columns: 1fr; } }
+    
+    /* Dashboard */
+    .resume_dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 48px 0;
+    }
+    .resume_dashboard .item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .resume_dashboard .tit {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .resume_dashboard .txt {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .resume_dashboard .txt_top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .resume_dashboard .emph {
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--text);
+    }
+    .resume_dashboard .badge_state {
+      background: var(--accent);
+      color: #000;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .resume_dashboard .txt_bottom {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    @media (max-width: 640px) {
+      .experience-item { grid-template-columns: 1fr; }
+      .resume_dashboard { grid-template-columns: 1fr; }
+    }
     `;
 
         const htmlContent = `
