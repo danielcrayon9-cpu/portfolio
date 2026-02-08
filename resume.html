@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resume - 김충원</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+    :root {
+      --bg: #ffffff;
+      --card: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #38bdf8;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+    header {
+      margin-bottom: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .header-content { flex: 1; }
+    header h1 { font-size: 36px; margin: 0 0 8px; }
+    header p { color: var(--muted); margin: 0; }
+    .header-meta { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; }
+    .profile-picture-container {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px dashed var(--border);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-picture-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    section { margin-bottom: 48px; }
+    section h2 { font-size: 22px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .experience-item { display: grid; grid-template-columns: 120px 1fr; gap: 20px; }
+    .experience-period { color: var(--muted); font-size: 14px; }
+    .experience-content h3 { margin: 0 0 4px; font-size: 18px; }
+    .experience-content span { font-size: 14px; color: var(--muted); }
+    .experience-content ul { margin: 12px 0 0; padding-left: 18px; }
+    .experience-content li { margin-bottom: 6px; font-size: 14px; }
+    .skill-list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill { background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--text); }
+    .project h3 { margin: 0 0 8px; font-size: 18px; }
+    .project p { margin: 0; font-size: 14px; color: var(--muted); }
+    
+    /* Dashboard */
+    .resume_dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 48px 0;
+    }
+    .resume_dashboard .item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .resume_dashboard .tit {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .resume_dashboard .txt {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .resume_dashboard .txt_top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .resume_dashboard .emph {
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--text);
+    }
+    .resume_dashboard .badge_state {
+      background: var(--accent);
+      color: #000;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .resume_dashboard .txt_bottom {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    @media (max-width: 640px) {
+      .experience-item { grid-template-columns: 1fr; }
+      .resume_dashboard { grid-template-columns: 1fr; }
+    }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>김충원</h1>
+        <p>Web Publisher / Frontend Developer</p>
+        <div class="header-meta">
+          <span>📧 hong@example.com</span>
+          <span>🌐 github.com/yourname</span>
+          <span>📍 Seoul, Korea</span>
+        </div>
+      </div>
+      
+    </header>
+
+    <ul class="resume_dashboard">
+      <li class="item">
+        <strong class="tit"><span class="material-icons" style="font-size:16px;">work</span>경력</strong>
+        <p class="txt">
+          <span class="txt_top">
+            <span class="emph">SK하이닉스</span>
+            <span class="badge_state">재직중</span>
+          </span>
+          <span class="txt_bottom">총 5년</span>
+        </p>
+      </li>
+      <li class="item">
+        <strong class="tit"><span class="material-icons" style="font-size:16px;">school</span>학력</strong>
+        <p class="txt">
+          <span class="txt_top">
+            <span class="emph">한국대학교</span>
+          </span>
+          <span class="txt_bottom">대학교(4년) 졸업</span>
+        </p>
+      </li>
+      <li class="item">
+        <strong class="tit"><span class="material-icons" style="font-size:16px;">payments</span>희망연봉</strong>
+        <p class="txt">
+          <span class="txt_top">
+            <span class="emph">면접 후 결정</span>
+          </span>
+        </p>
+      </li>
+      <li class="item">
+        <strong class="tit"><span class="material-icons" style="font-size:16px;">folder</span>포트폴리오</strong>
+        <p class="txt">
+          <span class="txt_top">
+            <span class="emph">총 0건</span>
+          </span>
+        </p>
+      </li>
+    </ul>
+
+    <section>
+      <h2>Summary</h2>
+      <div class="card">공공기관 웹사이트 및 접근성 인증 프로젝트를 다수 수행한 웹 퍼블리셔 겸 프론트엔드 개발자입니다. HTML, CSS, SCSS 구조화와 유지보수에 강점이 있으며, React 기반 프로젝트 경험도 보유하고 있습니다.</div>
+    </section>
+
+    <section>
+      <h2>Experience</h2>
+      
+      <div class="card experience-item">
+        <div class="experience-period">2020.03 – 2024.12</div>
+        <div class="experience-content">
+          <h3>OOO Company</h3>
+          <span>Web Publisher</span>
+          <ul>
+            <li>공공기관 웹사이트 퍼블리싱 및 유지보수</li><li>웹 접근성(WA) 인증 대응</li><li>SCSS 기반 디자인 시스템 정비</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card experience-item">
+        <div class="experience-period">2017.01 – 2020.02</div>
+        <div class="experience-content">
+          <h3>XXX Studio</h3>
+          <span>Frontend Developer</span>
+          <ul>
+            <li>React 기반 통계 시스템 화면 개발</li><li>공공 컴포넌트 설계</li><li>디자이너/기획자 협업</li>
+          </ul>
+        </div>
+      </div>
+      
+    </section>
+
+    <section>
+      <h2>Skills</h2>
+      <div class="skill-list">
+        <span class="skill">HTML5</span><span class="skill">CSS3</span><span class="skill">SCSS</span><span class="skill">JavaScript</span><span class="skill">React</span><span class="skill">Web Accessibility</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Projects</h2>
+      
+      <div class="card project">
+        <h3>국회 통합 정보 시스템</h3>
+        <p>공공기관 통합 포털 퍼블리싱 및 접근성 인증 대응</p>
+      </div>
+      
+      <div class="card project">
+        <h3>부동산 통계 시스템 (R-ONE)</h3>
+        <p>React 기반 통계 화면 퍼블리싱 및 UI 개선</p>
+      </div>
+      
+    </section>
+  </div>
+</body>
+</html>
+    
