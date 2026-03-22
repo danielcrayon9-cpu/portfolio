@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #606b7b; 
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .controls {
+            margin: 0 auto 30px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 0; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            max-width: 1400px;
+        }
+
+        .drop-zone {
+            width: 100%;
+            border: 2px dashed #ddd;
+            border-radius: 0; 
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background-color: transparent;
+        }
+
+        .drop-zone.dragover { background-color: #f1f1f1; border-color: #999; }
+        .drop-zone p { margin: 5px 0; }
+        
+        .batch-inputs {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #eee;
+            box-sizing: border-box;
+        }
+        
+        .batch-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .batch-inputs input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 0; 
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: 'Pretendard', sans-serif;
+            flex: 1;
+        }
+        
+        #batchYear { max-width: 100px; text-align: center; }
+
+        .batch-checkboxes, .batch-tab-select { display: flex; gap: 12px; padding: 0 10px; align-items: center; flex-wrap: wrap; }
+        .batch-checkboxes label, .batch-tab-select label { font-size: 14px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        
+        .batch-tab-select { background: #e9ecef; padding: 8px 12px; border-radius: 4px; border: 1px solid #dee2e6; min-height: 36px; }
+        .batch-tab-select span { font-size: 13px; font-weight: 600; margin-right: 5px; color: #495057; }
+
+        .button-group { display: flex; gap: 10px; width: 100%; justify-content: flex-end; }
+        .controls button { padding: 10px 20px; background-color: #333; color: white; border: none; border-radius: 0; cursor: pointer; font-size: 15px; font-family: 'Pretendard', sans-serif; transition: background 0.3s; }
+        .controls button:hover { background-color: #555; }
+        .btn-sort { background-color: #28a745 !important; }
+        .btn-sort:hover { background-color: #218838 !important; }
+        .btn-export { background-color: #0056b3 !important; }
+        .btn-export:hover { background-color: #004494 !important; }
+
+        /* --- 🚀 커스텀 둥근 탭 스타일 --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            background-color: transparent;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .tab-button {
+            background: transparent; /* 🚀 기본 배경색 없음 */
+            border: 1px solid #ffffff52; /* 🚀 흰색 테두리 */
+            border-radius: 30px;
+            padding: 8px 20px; 
+            font-size: 15px;
+            font-weight: 500;
+            color: #ffffff52; /* 🚀 기본 흰색 글씨 */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .tab-button:hover {
+            border-color: rgba(255, 255, 255, 0.7); /* 살짝 투명해지는 효과 */
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .tab-button.active { 
+            background: #2a2a2e; /* 🚀 선택된 탭 검은색 배경 */
+            border-color: #2a2a2e;
+            color: #ffffff; /* 🚀 선택된 탭 흰색 글씨 */
+            font-weight: 600;
+        }
+        
+        /* 에디터 관리용 탭 스타일 유지 */
+        .tab-button.tab-hidden-admin { margin-left: auto; font-size: 14px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; box-shadow: none; }
+        .tab-button.tab-hidden-admin.active { background: #ff6b6b; border-color: #ff6b6b; color: #fff; }
+
+        .tab-setting-btn { font-size: 13px; padding: 6px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 30px; box-shadow: none; cursor:pointer;}
+        .tab-setting-btn:hover { background: rgba(255,255,255,0.1); }
+
+        /* --- 그리드 및 카드 스타일 --- */
+        .portfolio-grid { 
+            margin: 0 auto; width: 100%; max-width: 1400px; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; grid-auto-rows: 10px; align-items: start;
+        }
+        @media (max-width: 1200px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(1, 1fr); } }
+
+        .grid-item { position: relative; opacity: 0; cursor: grab; transition: opacity 0.4s ease-out, transform 0.2s; }
+        .grid-item.hidden { display: none !important; }
+
+        .grid-item-content { background: #ffffff; border-radius: 0; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column; position: relative; padding: 10px; box-sizing: border-box; }
+        .grid-item:active { cursor: grabbing; }
+        .grid-item.dragging { opacity: 0.5 !important; transform: scale(0.95); z-index: 100; }
+        .grid-item img { width: 100%; display: block; border: none; cursor: pointer; }
+
+        .caption { padding: 12px 0 8px 0; margin: 0; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 6px; }
+        .caption-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .caption-title-wrapper { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+        .editable-caption, .editable-year, .editable-tag, .editable-url { border: none; background: transparent; box-sizing: border-box; cursor: text; font-family: 'Pretendard', sans-serif; width: 100%; padding: 4px; }
+        .editable-caption::placeholder, .editable-year::placeholder, .editable-tag::placeholder, .editable-url::placeholder { color: #999999; opacity: 1; }
+        
+        .editable-caption { color: #222222; font-size: 15px; font-weight: 600; padding-left: 0; } 
+        
+        .editable-year { width: 60px; color: #666666; font-size: 14px; text-align: right; padding-right: 0; padding-top: 6px; cursor: pointer; }
+        .editable-year:hover { text-decoration: underline; color: #333; }
+        .editable-year.active { color: #fff; background-color: #333; border-radius: 4px; padding: 2px 4px; }
+
+        /* 🚀 에디터용 태그 폰트 13px로 수정 */
+        .editable-tag { color: #777777; font-size: 13px; background-color: #f6f6f6; border-radius: 4px; padding: 4px 6px; cursor: pointer; }
+        .editable-url { color: #888888; font-size: 13px; padding-left: 0; }
+
+        .editable-caption:focus, .editable-url:focus { outline: none; background: #f1f3f5; border-radius: 0; }
+        .editable-tag:focus, .editable-year:focus { background-color: #e9ecef; border-radius: 4px; outline: none; }
+
+        /* 🚀 에디터용 필터 가짜 태그 폰트 13px로 수정 */
+        .filter-tag-btn { display: inline-block; color: #777777; font-size: 13px; background-color: #f6f6f6; border-radius: 4px; padding: 4px 6px; cursor: pointer; margin-right: 4px; margin-bottom: 4px;}
+        .filter-tag-btn:hover { text-decoration: underline; color: #333; }
+        .filter-tag-btn.active { background-color: #333; color: #fff; text-decoration: none; font-weight: bold; }
+
+        .device-toggles { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+        .device-toggle { background-color: #f1f3f5; color: #adb5bd; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: 0.2s; user-select: none; }
+        .device-toggle:hover { background-color: #e9ecef; }
+        .device-toggle.active { background-color: #000000; color: #ffffff; }
+
+        .item-tab-select { border: 1px solid #eee; background: #f8f9fa; border-radius: 4px; padding: 2px 4px; font-size: 11px; color: #495057; outline: none; cursor: pointer; font-family: 'Pretendard', sans-serif; }
+
+        .delete-btn { position: absolute; top: -5px; right: -5px; background: rgba(255, 60, 60, 0.9); color: white; border: none; border-radius: 0; width: 32px; height: 32px; font-size: 16px; cursor: pointer; opacity: 0; transition: opacity 0.3s; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .grid-item:hover .delete-btn { opacity: 1; }
+
+        .update-img-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); color: yellow; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; transition: opacity 0.3s, background 0.3s; z-index: 10; }
+        .grid-item:hover .update-img-btn { opacity: 1; }
+        .update-img-btn:hover { background: #333; }
+
+        .toggle-hide-btn { position: absolute; top: 10px; left: 55px; background: rgba(0, 0, 0, 0.6); color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; transition: opacity 0.3s, background 0.3s; z-index: 10; }
+        .grid-item:hover .toggle-hide-btn { opacity: 1; }
+        .toggle-hide-btn.hidden-mode { background: #e03131; opacity: 1; }
+
+        /* 모달 디자인 */
+        .modal { display: none; position: fixed; z-index: 1000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.8); }
+        .modal-content { margin: auto; display: block; width: 80%; max-width: 1000px; animation-name: zoom; animation-duration: 0.3s; }
+        @keyframes zoom { from {transform:scale(0.8); opacity:0;} to {transform:scale(1); opacity:1;} }
+        .close-btn { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 1001; }
+        .close-btn:hover, .close-btn:focus { color: #bbb; text-decoration: none; }
+        #modalImg { width: 100%; height: auto; }
+
+        .tab-modal-inner { background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; margin: 50px auto; color: #333; }
+        .tab-modal-inner h3 { margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+        .tab-edit-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .tab-edit-row input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; font-family: 'Pretendard', sans-serif; }
+        .tab-edit-row button { padding: 10px 15px; background: #fa5252; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-family: 'Pretendard', sans-serif; }
+        .tab-edit-row button:hover { background: #e03131; }
+        .add-tab-btn { width: 100%; padding: 12px; background: #f1f3f5; color: #495057; border: 1px dashed #ced4da; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; font-family: 'Pretendard', sans-serif; }
+        .add-tab-btn:hover { background: #e9ecef; }
+        
+        .btn-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #333333; color: #ffffff; border: none; border-radius: 0; font-size: 20px; font-family: 'Pretendard', sans-serif; font-weight: bold; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+        .btn-top.show { opacity: 1; visibility: visible; }
+        .btn-top:hover { background-color: #000000; transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div id="dropZone" class="drop-zone">
+            <p>여러 이미지를 드래그하여 등록하세요</p>
+            <p>또는 클릭하여 파일을 선택하세요</p>
+        </div>
+        <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+        
+        <div class="batch-inputs">
+            <div class="batch-row">
+                <div class="batch-tab-select" id="batchTabSelectContainer"></div>
+                <input type="text" id="batchCaption" placeholder="제목 (일괄 적용)">
+                <input type="text" id="batchYear" placeholder="년도">
+            </div>
+            <div class="batch-row">
+                <div class="batch-checkboxes">
+                    <label><input type="checkbox" id="batchPc"> PC</label>
+                    <label><input type="checkbox" id="batchResponsive"> 반응형</label>
+                    <label><input type="checkbox" id="batchMobile"> 모바일</label>
+                </div>
+                <input type="text" id="batchTag" placeholder="서브 태그 (# 자동생성)">
+                <input type="text" id="batchUrl" placeholder="링크 URL (예: https://example.com)">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="clearGalleryData()" style="background-color: #f1f1f1; color: #333; border: 1px solid #ddd;">전체 지우기</button>
+            <button onclick="addImages()">목록에 추가</button>
+            <button onclick="exportFinalHTML()" class="btn-export">최종 HTML 저장</button>
+        </div>
+    </div>
+
+    <div class="tabs" id="mainTabsContainer"></div>
+
+    <div class="portfolio-grid" id="grid"></div>
+
+    <div id="myModal" class="modal" onclick="closeLightbox()">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <div class="modal-content">
+            <img id="modalImg">
+        </div>
+    </div>
+
+    <div id="tabSettingsModal" class="modal">
+        <div class="tab-modal-inner">
+            <h3>⚙️ 탭 항목 관리</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">탭 이름을 수정하거나 새 탭을 추가/삭제할 수 있습니다.<br>(※ 삭제된 탭의 항목들은 자동으로 첫 번째 탭으로 이동됩니다.)</p>
+            <div id="tabEditList"></div>
+            <button class="add-tab-btn" onclick="addNewTabRow()">+ 새 탭 추가</button>
+            
+            <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="closeTabModal()" style="padding: 10px 20px; background: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-family: 'Pretendard';">취소</button>
+                <button onclick="saveTabConfig()" style="padding: 10px 20px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Pretendard'; font-weight: bold;">변경사항 저장</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-top" id="btnTop" onclick="scrollToTop()">↑</button>
+    <input type="file" id="updateImageInput" accept="image/*" style="display:none;">
+
+    <script>
+        let tabsConfig = JSON.parse(localStorage.getItem('portfolio_tabs')) || [
+            { id: 'main', name: '메인' },
+            { id: 'logo', name: '로고' },
+            { id: 'event', name: '이벤트' }
+        ];
+
+        let currentTab = 'all'; 
+        let currentActiveYear = null;
+        let currentActiveTag = null;
+        let currentItemToUpdateId = null; 
+
+        function renderTabsUI() {
+            const tabsContainer = document.getElementById('mainTabsContainer');
+            let tabsHtml = `<button class="tab-button active" onclick="switchTab('all')">전체</button>`;
+            tabsConfig.forEach(tab => {
+                tabsHtml += `<button class="tab-button" onclick="switchTab('${tab.id}')">${tab.name}</button>`;
+            });
+            tabsHtml += `<button class="tab-button tab-hidden-admin" onclick="switchTab('hidden')">숨김 항목 (관리용)</button>`;
+            tabsHtml += `<button class="tab-button tab-setting-btn" onclick="openTabModal()">⚙️ 탭 관리</button>`;
+            tabsContainer.innerHTML = tabsHtml;
+
+            const batchTabSelect = document.getElementById('batchTabSelectContainer');
+            let radioHtml = `<span>분류 탭:</span>`;
+            tabsConfig.forEach((tab, index) => {
+                radioHtml += `<label><input type="radio" name="batchTab" value="${tab.id}" ${index === 0 ? 'checked' : ''}> ${tab.name}</label>`;
+            });
+            batchTabSelect.innerHTML = radioHtml;
+
+            switchTab('all');
+        }
+
+        function openTabModal() {
+            const list = document.getElementById('tabEditList');
+            list.innerHTML = '';
+            tabsConfig.forEach(tab => {
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="tab-edit-row" data-id="${tab.id}">
+                        <input type="text" value="${tab.name}">
+                        <button onclick="this.parentElement.remove()">삭제</button>
+                    </div>
+                `);
+            });
+            document.getElementById('tabSettingsModal').style.display = 'block';
+        }
+
+        function closeTabModal() {
+            document.getElementById('tabSettingsModal').style.display = 'none';
+        }
+
+        function addNewTabRow() {
+            const id = 'tab_' + Date.now().toString(36);
+            document.getElementById('tabEditList').insertAdjacentHTML('beforeend', `
+                <div class="tab-edit-row" data-id="${id}">
+                    <input type="text" placeholder="새 탭 이름">
+                    <button onclick="this.parentElement.remove()">삭제</button>
+                </div>
+            `);
+        }
+
+        function saveTabConfig() {
+            const rows = document.querySelectorAll('.tab-edit-row');
+            const newTabs = [];
+            rows.forEach(row => {
+                const id = row.getAttribute('data-id');
+                const name = row.querySelector('input').value.trim();
+                if(name) newTabs.push({id, name});
+            });
+
+            if(newTabs.length === 0) {
+                alert('최소 1개 이상의 탭은 필요합니다.');
+                return;
+            }
+
+            const newTabIds = newTabs.map(t => t.id);
+            const fallbackTabId = newTabs[0].id;
+
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const req = store.getAll();
+
+            req.onsuccess = function(e) {
+                const items = e.target.result;
+                items.forEach(item => {
+                    if (!newTabIds.includes(item.tabCategory)) {
+                        item.tabCategory = fallbackTabId; 
+                        store.put(item);
+                    }
+                });
+
+                tabsConfig = newTabs; 
+                localStorage.setItem('portfolio_tabs', JSON.stringify(tabsConfig)); 
+                
+                closeTabModal();
+                renderTabsUI();
+                loadGalleryData(); 
+            };
+        }
+
+
+        function resizeGridItem(item) {
+            const rowHeight = 10; 
+            const content = item.querySelector('.grid-item-content');
+            if (!content) return;
+            const contentHeight = content.getBoundingClientRect().height;
+            const rowSpan = Math.ceil((contentHeight + 30) / rowHeight); 
+            item.style.gridRowEnd = "span " + rowSpan;
+        }
+
+        function resizeAllGridItems() {
+            document.querySelectorAll('.grid-item').forEach(resizeGridItem);
+        }
+
+        window.addEventListener("resize", resizeAllGridItems);
+
+        let pendingFiles = []; 
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('imageInput');
+
+        dropZone.addEventListener('click', () => fileInput.click()); 
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'));
+        });
+
+        dropZone.addEventListener('drop', e => {
+            pendingFiles = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+            updateDropZoneUI();
+        });
+
+        fileInput.addEventListener('change', e => {
+            pendingFiles = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+            updateDropZoneUI();
+        });
+
+        function updateDropZoneUI() {
+            if (pendingFiles.length > 0) {
+                dropZone.innerHTML = `
+                    <p style="color: #28a745; font-size: 18px; font-weight: bold;">✅ ${pendingFiles.length}개의 이미지가 첨부 대기 중입니다.</p>
+                    <p style="font-size: 14px; color: #555;">아래 일괄 폼을 작성하고 <b>[목록에 추가]</b> 버튼을 누르세요.</p>`;
+                dropZone.style.borderColor = '#28a745';
+                dropZone.style.backgroundColor = '#f8fff9';
+            } else {
+                dropZone.innerHTML = `
+                    <p>여러 이미지를 드래그하여 등록하세요</p>
+                    <p>또는 클릭하여 파일을 선택하세요</p>`;
+                dropZone.style.borderColor = '#ddd';
+                dropZone.style.backgroundColor = 'transparent';
+            }
+        }
+
+        function processFiles(files) {
+            const tabVal = document.querySelector('input[name="batchTab"]:checked').value; 
+            const captionVal = document.getElementById('batchCaption').value.trim();
+            const yearVal = document.getElementById('batchYear').value.trim(); 
+            const pcVal = document.getElementById('batchPc').checked;
+            const resVal = document.getElementById('batchResponsive').checked;
+            const mobVal = document.getElementById('batchMobile').checked;
+            let tagVal = document.getElementById('batchTag').value.trim();
+            const urlVal = document.getElementById('batchUrl').value.trim();
+
+            if(tagVal) {
+                tagVal = tagVal.split(/\s+/).map(t => t.startsWith('#') ? t : '#' + t).join(' ');
+            }
+
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img_src = e.target.result;
+                    const id = Date.now().toString() + Math.random().toString(36).substring(2, 9); 
+                    const order = Date.now(); 
+
+                    const newItem = { 
+                        id: id, img_src: img_src, caption: captionVal, year: yearVal, tag: tagVal, url: urlVal, 
+                        isPc: pcVal, isResponsive: resVal, isMobile: mobVal, order: order,
+                        isHidden: false, 
+                        tabCategory: tabVal 
+                    };
+
+                    const transaction = db.transaction([storeName], "readwrite");
+                    const store = transaction.objectStore(storeName);
+                    store.add(newItem);
+
+                    transaction.oncomplete = function() {
+                        createGridItem(id, img_src, captionVal, yearVal, tagVal, urlVal, pcVal, resVal, mobVal, false, tabVal);
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addImages() {
+            if (pendingFiles.length === 0) {
+                alert("첨부된 이미지가 없습니다. 먼저 이미지를 선택해주세요.");
+                return;
+            }
+
+            processFiles(pendingFiles);
+            
+            pendingFiles = []; 
+            fileInput.value = '';
+            updateDropZoneUI();
+            
+            document.getElementById('batchCaption').value = '';
+            document.getElementById('batchYear').value = ''; 
+            document.getElementById('batchTag').value = '';
+            document.getElementById('batchUrl').value = '';
+            document.getElementById('batchPc').checked = false;
+            document.getElementById('batchResponsive').checked = false;
+            document.getElementById('batchMobile').checked = false;
+            
+            const firstRadio = document.querySelector('input[name="batchTab"]');
+            if(firstRadio) firstRadio.checked = true; 
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const allItems = document.querySelectorAll('.grid-item');
+            
+            const allTabButtons = document.querySelectorAll('#mainTabsContainer .tab-button');
+            allTabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const activeBtn = document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('${tab}')"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            currentActiveYear = null;
+            currentActiveTag = null;
+            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
+            document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
+
+            allItems.forEach(item => {
+                const itemTab = item.getAttribute('data-tabCategory');
+                const isHidden = item.getAttribute('data-hidden') === 'true';
+                
+                if (tab === 'hidden') {
+                    if (isHidden) item.classList.remove('hidden');
+                    else item.classList.add('hidden');
+                } 
+                else {
+                    if (isHidden) {
+                        item.classList.add('hidden');
+                    } else if (tab === 'all') {
+                        item.classList.remove('hidden');
+                    } else if (tab === itemTab) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                }
+            });
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        function filterByYearEditor(clickedYear, element) {
+            const allItems = document.querySelectorAll('.grid-item');
+            
+            document.querySelectorAll('#mainTabsContainer .tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('all')"]`).classList.add('active');
+            
+            currentActiveTag = null;
+            document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
+
+            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
+
+            if (currentActiveYear === clickedYear) {
+                allItems.forEach(item => {
+                    if(item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden');
+                });
+                currentActiveYear = null;
+            } else {
+                allItems.forEach(item => {
+                    const yearInput = item.querySelector('.editable-year');
+                    const yearStr = yearInput ? yearInput.value.trim() : '';
+                    if (yearStr === clickedYear && item.getAttribute('data-hidden') !== 'true') {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+                document.querySelectorAll('.editable-year').forEach(y => {
+                    if (y.value.trim() === clickedYear) y.classList.add('active');
+                });
+                currentActiveYear = clickedYear;
+            }
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        function filterByTagEditor(clickedTag, element) {
+            const allItems = document.querySelectorAll('.grid-item');
+            
+            document.querySelectorAll('#mainTabsContainer .tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('all')"]`).classList.add('active');
+            
+            currentActiveYear = null;
+            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
+
+            document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
+
+            if (currentActiveTag === clickedTag) {
+                allItems.forEach(item => {
+                    if(item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden');
+                });
+                currentActiveTag = null;
+            } else {
+                allItems.forEach(item => {
+                    const tagInput = item.querySelector('.editable-tag');
+                    const tagsStr = tagInput ? tagInput.value : '';
+                    if (tagsStr.includes(clickedTag) && item.getAttribute('data-hidden') !== 'true') {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+                
+                document.querySelectorAll('.filter-tag-btn').forEach(t => {
+                    if (t.innerText === clickedTag) t.classList.add('active');
+                });
+                currentActiveTag = clickedTag;
+            }
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        function applyScrollFade() {
+            const gridItems = document.querySelectorAll('.grid-item:not(.hidden):not(.dragging)'); 
+            const viewportHeight = window.innerHeight;
+            const fadeZoneHeight = viewportHeight * 0.2; 
+
+            gridItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const itemTop = rect.top;
+                const itemBottom = rect.bottom;
+
+                let opacity = 1;
+                if (itemTop > viewportHeight - fadeZoneHeight) {
+                    opacity = Math.max(0, (viewportHeight - itemTop) / fadeZoneHeight); 
+                } else if (itemBottom < fadeZoneHeight) {
+                    opacity = Math.max(0, itemBottom / fadeZoneHeight); 
+                }
+                item.style.opacity = Math.max(0, Math.min(1, opacity));
+            });
+        }
+
+        let db;
+        const dbName = "PortfolioGalleryDB";
+        const storeName = "images";
+        const request = indexedDB.open(dbName, 1);
+
+        request.onerror = function(event) { console.error("DB 오류:", event.target.error); };
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: "id" });
+            }
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            renderTabsUI(); 
+            
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const getAllRequest = store.getAll();
+            
+            getAllRequest.onsuccess = function(e) {
+                const items = e.target.result;
+                let needsUpdate = false;
+                
+                if(items && items.length > 0) {
+                    items.forEach(item => {
+                        if (!item.tabCategory) {
+                            item.tabCategory = tabsConfig[0].id;
+                            store.put(item);
+                            needsUpdate = true;
+                        }
+                    });
+                }
+                loadGalleryData(); 
+            };
+
+            window.addEventListener('load', applyScrollFade);
+            window.addEventListener('scroll', () => {
+                requestAnimationFrame(applyScrollFade);
+                toggleTopButton();
+            }); 
+        };
+
+        function createGridItem(id, img_src, captionText, yearText, tagText, urlText, isPc = false, isResponsive = false, isMobile = false, isHidden = false, tabCategory = '') {
+            const grid = document.getElementById('grid');
+            const item = document.createElement('div');
+            item.className = 'grid-item';
+            
+            item.dataset.id = id; 
+            item.setAttribute('data-tabCategory', tabCategory); 
+            item.setAttribute('data-hidden', isHidden);
+
+            item.setAttribute('draggable', true);
+
+            item.addEventListener('dragstart', () => { item.classList.add('dragging'); item.style.opacity = '0.5'; });
+            item.addEventListener('dragend', () => { 
+                item.classList.remove('dragging'); 
+                applyScrollFade(); 
+                updateOrderInDB(); 
+                resizeAllGridItems(); 
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault(); 
+                const draggingItem = document.querySelector('.dragging');
+                if (draggingItem && draggingItem !== item) {
+                    const rect = item.getBoundingClientRect();
+                    if (e.clientY - rect.top > rect.height / 2) {
+                        item.parentNode.insertBefore(draggingItem, item.nextSibling);
+                    } else {
+                        item.parentNode.insertBefore(draggingItem, item);
+                    }
+                }
+            });
+
+            const contentWrap = document.createElement('div');
+            contentWrap.className = 'grid-item-content';
+
+            const img = document.createElement('img');
+            img.src = img_src;
+            img.setAttribute('draggable', false); 
+            img.onclick = function() { showLightbox(img_src); };
+            
+            img.onload = () => resizeGridItem(item);
+
+            const caption = document.createElement('div');
+            caption.className = 'caption';
+
+            const captionHeader = document.createElement('div');
+            captionHeader.className = 'caption-header';
+
+            const titleWrapper = document.createElement('div');
+            titleWrapper.className = 'caption-title-wrapper';
+
+            const captionEditField = document.createElement('input');
+            captionEditField.type = 'text';
+            captionEditField.className = 'editable-caption';
+            captionEditField.placeholder = '제목 없음';
+            captionEditField.value = captionText;
+
+            const toggleContainer = document.createElement('div');
+            toggleContainer.className = 'device-toggles';
+
+            const tabSelect = document.createElement('select');
+            tabSelect.className = 'item-tab-select';
+            let selectOptions = '';
+            tabsConfig.forEach(t => {
+                selectOptions += `<option value="${t.id}" ${tabCategory === t.id ? 'selected' : ''}>${t.name}</option>`;
+            });
+            tabSelect.innerHTML = selectOptions;
+            
+            tabSelect.addEventListener('mousedown', (e) => { e.stopPropagation(); item.setAttribute('draggable', false); });
+            tabSelect.addEventListener('change', function(e) {
+                updateData(id, 'tabCategory', this.value);
+                item.setAttribute('data-tabCategory', this.value);
+                switchTab(currentTab); 
+            });
+            tabSelect.addEventListener('blur', () => item.setAttribute('draggable', true));
+
+            toggleContainer.appendChild(tabSelect); 
+
+            const createToggle = (text, fieldName, isActive) => {
+                const span = document.createElement('span');
+                span.className = 'device-toggle' + (isActive ? ' active' : '');
+                span.innerText = text;
+                
+                span.addEventListener('mousedown', (e) => { e.stopPropagation(); item.setAttribute('draggable', false); });
+                span.addEventListener('mouseleave', () => item.setAttribute('draggable', true));
+                
+                span.onclick = function(e) {
+                    e.stopPropagation();
+                    const currentState = this.classList.toggle('active');
+                    updateData(id, fieldName, currentState);
+                };
+                return span;
+            };
+
+            toggleContainer.appendChild(createToggle('PC', 'isPc', isPc));
+            toggleContainer.appendChild(createToggle('반응형', 'isResponsive', isResponsive));
+            toggleContainer.appendChild(createToggle('모바일', 'isMobile', isMobile));
+
+            titleWrapper.appendChild(captionEditField);
+            titleWrapper.appendChild(toggleContainer);
+
+            const yearEditField = document.createElement('input');
+            yearEditField.type = 'text';
+            yearEditField.className = 'editable-year';
+            yearEditField.placeholder = '년도';
+            yearEditField.value = yearText || '';            
+
+            captionHeader.appendChild(titleWrapper);
+            captionHeader.appendChild(yearEditField);
+
+            const tagsWrapper = document.createElement('div');
+            
+            const tagEditField = document.createElement('input');
+            tagEditField.type = 'text';
+            tagEditField.className = 'editable-tag';
+            tagEditField.placeholder = '서브 태그 (# 자동생성)';
+            tagEditField.value = tagText || ''; 
+            tagEditField.style.display = 'none';
+
+            const tagDisplayArea = document.createElement('div');
+            tagDisplayArea.style.marginTop = '2px';
+            tagDisplayArea.style.minHeight = '24px'; // 🚀 내용이 없어도 최소 높이 유지
+            
+            function renderTags(tagString) {
+                tagDisplayArea.innerHTML = '';
+                if(tagString && tagString.trim() !== '') {
+                    const tags = tagString.split(' ');
+                    tags.forEach(t => {
+                        if(t) {
+                            const btn = document.createElement('span');
+                            btn.className = 'filter-tag-btn';
+                            btn.innerText = t;
+                            tagDisplayArea.appendChild(btn);
+                        }
+                    });
+                } else {
+                    // 🚀 태그가 비어있을 때 클릭 유도 안내 문구 표시
+                    tagDisplayArea.innerHTML = '<span style="color:#adb5bd; font-size:13px; cursor:text;">+ 서브 태그 추가</span>';
+                }
+            }
+            renderTags(tagText);
+
+            tagDisplayArea.onclick = function() {
+                tagDisplayArea.style.display = 'none';
+                tagEditField.style.display = 'block';
+                tagEditField.focus();
+            };
+
+            tagEditField.addEventListener('blur', function() {
+                tagEditField.style.display = 'none';
+                tagDisplayArea.style.display = 'block';
+                renderTags(this.value);
+            });
+
+            tagsWrapper.appendChild(tagDisplayArea);
+            tagsWrapper.appendChild(tagEditField);
+
+            const urlEditField = document.createElement('input');
+            urlEditField.type = 'text';
+            urlEditField.className = 'editable-url';
+            urlEditField.placeholder = '링크 URL (없을 시 숨김)';
+            urlEditField.value = urlText || '';
+
+            [captionEditField, yearEditField, tagEditField, urlEditField].forEach(field => {
+                field.addEventListener('mousedown', () => item.setAttribute('draggable', false));
+                field.addEventListener('blur', () => item.setAttribute('draggable', true));
+                
+                field.addEventListener('focus', function() {
+                    if (this.value === '문구가 등록되지 않았습니다.' || this.value === '제목 없음') {
+                        this.value = '';
+                        updateData(id, 'caption', ''); 
+                    } else {
+                        this.select(); 
+                    }
+                });
+            });
+
+            tagEditField.addEventListener('change', function() { 
+                let val = this.value.trim();
+                if(val) {
+                    val = val.split(/\s+/).map(t => t.startsWith('#') ? t : '#' + t).join(' ');
+                    this.value = val;
+                }
+                updateData(id, 'tag', this.value); 
+            });
+
+            captionEditField.addEventListener('change', function() { updateData(id, 'caption', this.value); });
+            yearEditField.addEventListener('change', function() { updateData(id, 'year', this.value); });
+            urlEditField.addEventListener('change', function() { updateData(id, 'url', this.value); });
+
+            caption.appendChild(captionHeader);
+            caption.appendChild(tagsWrapper); 
+            caption.appendChild(urlEditField);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerText = '×';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation(); 
+                item.style.opacity = '0'; 
+                setTimeout(() => { 
+                    grid.removeChild(item); 
+                    deleteImage(id); 
+                    resizeAllGridItems(); 
+                }, 300); 
+            };
+
+            const updateImgBtn = document.createElement('button');
+            updateImgBtn.className = 'update-img-btn';
+            updateImgBtn.innerText = '수정'; 
+            
+            updateImgBtn.addEventListener('mousedown', (e) => { e.stopPropagation(); item.setAttribute('draggable', false); });
+            updateImgBtn.addEventListener('mouseleave', () => item.setAttribute('draggable', true));
+
+            updateImgBtn.onclick = function(e) {
+                e.stopPropagation();
+                currentItemToUpdateId = id; 
+                document.getElementById('updateImageInput').click(); 
+            };
+
+            const toggleHideBtn = document.createElement('button');
+            toggleHideBtn.className = 'toggle-hide-btn' + (isHidden ? ' hidden-mode' : '');
+            toggleHideBtn.innerText = isHidden ? '보이기' : '숨기기';
+            
+            toggleHideBtn.addEventListener('mousedown', (e) => { e.stopPropagation(); item.setAttribute('draggable', false); });
+            toggleHideBtn.addEventListener('mouseleave', () => item.setAttribute('draggable', true));
+
+            toggleHideBtn.onclick = function(e) {
+                e.stopPropagation();
+                const currentHideState = item.getAttribute('data-hidden') === 'true';
+                const nextHideState = !currentHideState;
+
+                item.setAttribute('data-hidden', nextHideState);
+                updateData(id, 'isHidden', nextHideState);
+
+                if (nextHideState) {
+                    this.classList.add('hidden-mode');
+                    this.innerText = '보이기';
+                } else {
+                    this.classList.remove('hidden-mode');
+                    this.innerText = '숨기기';
+                }
+                switchTab(currentTab);
+            };
+
+            contentWrap.appendChild(img);
+            contentWrap.appendChild(caption);
+            contentWrap.appendChild(deleteBtn);
+            contentWrap.appendChild(updateImgBtn); 
+            contentWrap.appendChild(toggleHideBtn); 
+            item.appendChild(contentWrap);
+            grid.appendChild(item);
+
+            applyScrollFade();
+            setTimeout(() => resizeGridItem(item), 10);
+        }
+
+        document.getElementById('updateImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/') && currentItemToUpdateId) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newImgSrc = event.target.result;
+                    
+                    updateData(currentItemToUpdateId, 'img_src', newImgSrc);
+                    
+                    const itemNode = document.querySelector(`.grid-item[data-id="${currentItemToUpdateId}"]`);
+                    if (itemNode) {
+                        itemNode.querySelector('img').src = newImgSrc;
+                        itemNode.querySelector('img').onload = () => resizeGridItem(itemNode);
+                    }
+                    
+                    currentItemToUpdateId = null;
+                    e.target.value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function toggleTopButton() {
+            const btnTop = document.getElementById('btnTop');
+            if (window.scrollY > 300) {
+                btnTop.classList.add('show');
+            } else {
+                btnTop.classList.remove('show');
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showLightbox(img_src) {
+            const modal = document.getElementById('myModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = "block";
+            modalImg.src = img_src;
+        }
+        function closeLightbox() { document.getElementById('myModal').style.display = "none"; }
+
+        function updateData(id, field, newValue) {
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const request = store.get(id);
+            request.onsuccess = function(e) {
+                const data = e.target.result;
+                if(data) { data[field] = newValue; store.put(data); }
+            };
+        }
+
+        function updateOrderInDB() {
+            const items = document.querySelectorAll('.grid-item');
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            items.forEach((itemNode, index) => {
+                const id = itemNode.dataset.id;
+                const request = store.get(id);
+                request.onsuccess = function(e) {
+                    const data = e.target.result;
+                    if (data) { data.order = index; store.put(data); }
+                };
+            });
+        }
+
+        // --- 🚀 2중 정렬: 년도순(내림차순) 우선 -> 년도 같으면 사용자지정(order) 오름차순
+        function sortByYear() {
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+            request.onsuccess = function(e) {
+                let items = e.target.result;
+                if(!items || items.length === 0) return;
+                
+                items.sort((a, b) => {
+                    const yearA = parseInt(a.year) || 0;
+                    const yearB = parseInt(b.year) || 0;
+                    if (yearB !== yearA) {
+                        return yearB - yearA; // 년도 최신순
+                    }
+                    return a.order - b.order; // 년도가 같으면 드래그(order) 순서 유지
+                });
+                
+                items.forEach((item, index) => { item.order = index; store.put(item); });
+                loadGalleryData();
+            };
+        }
+
+        function deleteImage(id) {
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            store.delete(id);
+        }
+
+        function loadGalleryData() {
+            const transaction = db.transaction([storeName], "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+            request.onsuccess = function(e) {
+                const items = e.target.result;
+                if(items && items.length > 0) {
+                    document.getElementById('grid').innerHTML = '';
+                    // 🚀 항상 년도 내림차순(최신순) 정렬 우선 적용, 년도가 같으면 드래그 순서 유지
+                    items.sort((a, b) => {
+                        const yearA = parseInt(a.year) || 0;
+                        const yearB = parseInt(b.year) || 0;
+                        if (yearB !== yearA) {
+                            return yearB - yearA; 
+                        }
+                        return a.order - b.order; 
+                    });
+                    items.forEach(item => {
+                        createGridItem(item.id, item.img_src, item.caption, item.year, item.tag, item.url, item.isPc, item.isResponsive, item.isMobile, item.isHidden, item.tabCategory);
+                    });
+                    switchTab('all'); 
+                } else {
+                    document.getElementById('grid').innerHTML = '';
+                }
+            };
+        }
+
+        function clearGalleryData() {
+            if (confirm("정말로 모든 데이터를 지우시겠습니까?")) {
+                const transaction = db.transaction([storeName], "readwrite");
+                const store = transaction.objectStore(storeName);
+                store.clear();
+                transaction.oncomplete = function() { document.getElementById('grid').innerHTML = ''; };
+            }
+        }
+
+        function exportFinalHTML() {
+            const transaction = db.transaction([storeName], "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            request.onsuccess = function(e) {
+                const items = e.target.result;
+                if(!items || items.length === 0) {
+                    alert("등록된 이미지가 없습니다.");
+                    return;
+                }
+                
+                // 배포용 HTML 추출 시 자동 년도순(내림차순) -> 드래그순 정렬
+                items.sort((a, b) => {
+                    const yearA = parseInt(a.year) || 0;
+                    const yearB = parseInt(b.year) || 0;
+                    if (yearB !== yearA) {
+                        return yearB - yearA; 
+                    }
+                    return a.order - b.order; 
+                });
+
+                let exportTabsHtml = `<button class="tab-button active" onclick="switchTab('all')">전체</button>`;
+                tabsConfig.forEach(tab => {
+                    exportTabsHtml += `\n        <button class="tab-button" onclick="switchTab('${tab.id}')">${tab.name}</button>`;
+                });
+
+                let gridHtml = '';
+                items.forEach(item => {
+                    if (item.isHidden) return;
+
+                    let yearHtml = '';
+                    const rawYear = item.year ? item.year.trim() : '';
+                    if (rawYear !== '') {
+                        yearHtml = `<p class="item-year" onclick="filterByYear('${rawYear}')">${rawYear}</p>`;
+                    }
+
+                    let deviceHtml = '';
+                    if (item.isPc) deviceHtml += `<span class="device-badge">PC</span>`;
+                    if (item.isResponsive) deviceHtml += `<span class="device-badge">반응형</span>`;
+                    if (item.isMobile) deviceHtml += `<span class="device-badge">모바일</span>`;
+                    
+                    if (deviceHtml !== '') {
+                        deviceHtml = `<div class="device-badges">${deviceHtml}</div>`;
+                    }
+
+                    let tagHtml = '';
+                    const rawTags = item.tag ? item.tag.trim() : '';
+                    if (rawTags !== '') {
+                        const tagsArray = rawTags.split(' ');
+                        tagHtml = `<div class="tag-container">`;
+                        tagsArray.forEach(t => {
+                            if(t) {
+                                tagHtml += `<span class="item-tag" onclick="filterByTag('${t}')">${t}</span>`; 
+                            }
+                        });
+                        tagHtml += `</div>`;
+                    }
+
+                    let urlHtml = '';
+                    if (item.url && item.url.trim() !== '') {
+                        let link = item.url.trim();
+                        if(!link.startsWith('http://') && !link.startsWith('https://')) {
+                            link = 'http://' + link;
+                        }
+                        urlHtml = `<a href="${link}" target="_blank" class="item-url" title="${item.url}">${item.url}</a>`;
+                    }
+
+                    gridHtml += `
+            <div class="grid-item" data-tabCategory="${item.tabCategory || 'main'}" data-year="${rawYear}" data-tags="${rawTags}">
+                <div class="grid-item-content">
+                    <img src="${item.img_src}" alt="portfolio image" onclick="showLightbox(this.src)">
+                    <div class="caption">
+                        <div class="caption-header">
+                            <div class="caption-title-row">
+                                <p class="caption-text">${item.caption || '제목 없음'}</p>
+                                ${deviceHtml}
+                            </div>
+                            ${yearHtml}
+                        </div>
+                        ${tagHtml}
+                        ${urlHtml}
+                    </div>
+                </div>
+            </div>`;
+                });
+
+                // 여기서부터 보기 좋게 줄바꿈 처리된 HTML 템플릿입니다.
+                const finalHtml = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        body { 
+            font-family: 'Pretendard', sans-serif; 
+            background-color: #606b7b; 
+            margin: 0; 
+            padding: 40px 20px; 
+        }
+        
+        /* --- 🚀 커스텀 둥근 탭 스타일 --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            background-color: transparent;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .tab-button {
+            background: transparent; /* 🚀 기본 배경색 없음 */
+            border: 1px solid #ffffff52; /* 🚀 흰색 테두리 */
+            border-radius: 30px;
+            padding: 8px 20px; 
+            font-size: 15px;
+            font-weight: 500;
+            color: #ffffff52; /* 🚀 기본 흰색 글씨 */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .tab-button:hover {
+            border-color: rgba(255, 255, 255, 0.7); /* 살짝 투명해지는 효과 */
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .tab-button.active { 
+            background: #2a2a2e; /* 🚀 선택된 탭 검은색 배경 */
+            border-color: #2a2a2e;
+            color: #ffffff; /* 🚀 선택된 탭 흰색 글씨 */
+            font-weight: 600;
+        }
+
+        .portfolio-grid { 
+            margin: 0 auto; 
+            width: 100%; 
+            max-width: 1400px; 
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            column-gap: 20px; 
+            grid-auto-rows: 10px;
+            align-items: start;
+        }
+        @media (max-width: 1200px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(1, 1fr); } }
+        
+        .grid-item { 
+            position: relative; 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+        }
+        .grid-item.hidden { display: none !important; }
+        .grid-item.visible { opacity: 1; transform: translateY(0); }
+        
+        .grid-item-content {
+            background: #ffffff; 
+            border-radius: 0;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .grid-item img { width: 100%; display: block; border: none; box-sizing: border-box; cursor: pointer; }
+        
+        .caption { padding: 12px 0 8px 0; text-align: left; display: flex; flex-direction: column; gap: 6px; }
+        .caption-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        
+        .caption-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .caption-text { margin: 0; color: #222222; font-size: 15px; font-weight: 600; }
+        .device-badges { display: flex; gap: 4px; align-items: center; }
+        .device-badge { background-color: #000000; color: #ffffff; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: normal; letter-spacing: 0.5px; }
+
+        .item-year { margin: 0; color: #666666; font-size: 14px; cursor: pointer; transition: color 0.2s; padding: 2px 4px; border-radius: 4px; margin-top: 2px; }
+        .item-year:hover { color: #333333; text-decoration: underline; background-color: #f6f6f6; }
+        .item-year.active { font-weight: bold; color: #fff; background-color: #333; text-decoration: none; }
+
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px;}
+        
+        .item-tag { color: #777777; font-size: 13px; background-color: #f6f6f6; border-radius: 4px; padding: 4px 6px; cursor: pointer; transition: 0.2s; }
+        .item-tag:hover { text-decoration: underline; color: #333; }
+        .item-tag.active { background-color: #333; color: #fff; text-decoration: none; font-weight: bold;}
+
+        .item-url { display: inline-block; font-size: 13px; color: #888888; text-decoration: none; word-break: break-all; transition: color 0.2s; }
+        .item-url:hover { color: #333333; text-decoration: underline; }
+
+        .modal { display: none; position: fixed; z-index: 1000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.9); }
+        .modal-content { margin: auto; display: block; width: 80%; max-width: 1000px; animation-name: zoom; animation-duration: 0.6s; }
+        @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+        .close-btn { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 1001; }
+        .close-btn:hover, .close-btn:focus { color: #bbb; text-decoration: none; }
+        #modalImg { width: 100%; height: auto; }
+
+        .btn-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #333333; color: #ffffff; border: none; border-radius: 0; font-size: 20px; font-family: 'Pretendard', sans-serif; font-weight: bold; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+        .btn-top.show { opacity: 1; visibility: visible; }
+        .btn-top:hover { background-color: #000000; transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+    <div class="tabs" id="mainTabsContainer">
+        ${exportTabsHtml}
+    </div>
+
+    <div class="portfolio-grid" id="mainGrid">
+${gridHtml}
+    </div>
+
+    <div id="myModal" class="modal" onclick="closeLightbox()">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <div class="modal-content">
+            <img id="modalImg">
+        </div>
+    </div>
+
+    <button class="btn-top" id="btnTop" onclick="scrollToTop()">↑</button>
+
+    <script>
+        function resizeGridItem(item) {
+            const rowHeight = 10;
+            const content = item.querySelector('.grid-item-content');
+            if (!content) return;
+            const contentHeight = content.getBoundingClientRect().height;
+            const rowSpan = Math.ceil((contentHeight + 30) / rowHeight);
+            item.style.gridRowEnd = "span " + rowSpan;
+        }
+
+        function resizeAllGridItems() {
+            document.querySelectorAll('.grid-item').forEach(resizeGridItem);
+        }
+
+        window.addEventListener("resize", resizeAllGridItems);
+        window.addEventListener("load", resizeAllGridItems);
+        
+        document.querySelectorAll('.grid-item img').forEach(img => {
+            if (img.complete) resizeGridItem(img.closest('.grid-item'));
+            else img.addEventListener('load', () => resizeGridItem(img.closest('.grid-item')));
+        });
+
+        let currentActiveYear = null;
+        let currentActiveTag = null;
+        
+        function switchTab(tab) {
+            const allItems = document.querySelectorAll('.grid-item');
+            const allTabButtons = document.querySelectorAll('.tab-button');
+            const allYears = document.querySelectorAll('.item-year');
+            const allTags = document.querySelectorAll('.item-tag');
+            
+            allTabButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(\`.tab-button[onclick="switchTab('\${tab}')"]\`).classList.add('active');
+
+            allYears.forEach(y => y.classList.remove('active'));
+            allTags.forEach(t => t.classList.remove('active'));
+            currentActiveYear = null;
+            currentActiveTag = null;
+
+            allItems.forEach(item => {
+                const itemTab = item.getAttribute('data-tabCategory');
+                
+                if (tab === 'all') {
+                    item.classList.remove('hidden');
+                } else if (tab === itemTab) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        function filterByYear(clickedYear) {
+            const allItems = document.querySelectorAll('.grid-item');
+            const allYears = document.querySelectorAll('.item-year');
+            const allTags = document.querySelectorAll('.item-tag');
+            const allTabButtons = document.querySelectorAll('.tab-button');
+            
+            allTabButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(\`.tab-button[onclick="switchTab('all')"]\`).classList.add('active');
+
+            allTags.forEach(t => t.classList.remove('active'));
+            currentActiveTag = null;
+
+            if (currentActiveYear === clickedYear) {
+                allItems.forEach(item => item.classList.remove('hidden'));
+                allYears.forEach(y => y.classList.remove('active'));
+                currentActiveYear = null;
+            } 
+            else {
+                allItems.forEach(item => {
+                    const yearStr = item.getAttribute('data-year') || '';
+                    if (yearStr === clickedYear) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                allYears.forEach(y => {
+                    if (y.innerText === clickedYear) y.classList.add('active');
+                    else y.classList.remove('active');
+                });
+                currentActiveYear = clickedYear;
+            }
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        function filterByTag(clickedTag) {
+            const allItems = document.querySelectorAll('.grid-item');
+            const allTags = document.querySelectorAll('.item-tag');
+            const allYears = document.querySelectorAll('.item-year');
+            const allTabButtons = document.querySelectorAll('.tab-button');
+
+            allTabButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(\`.tab-button[onclick="switchTab('all')"]\`).classList.add('active');
+
+            allYears.forEach(y => y.classList.remove('active'));
+            currentActiveYear = null;
+
+            if (currentActiveTag === clickedTag) {
+                allItems.forEach(item => item.classList.remove('hidden'));
+                allTags.forEach(t => t.classList.remove('active'));
+                currentActiveTag = null;
+            } else {
+                allItems.forEach(item => {
+                    const tagsStr = item.getAttribute('data-tags') || '';
+                    if (tagsStr.includes(clickedTag)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                allTags.forEach(t => {
+                    if (t.innerText === clickedTag) t.classList.add('active');
+                    else t.classList.remove('active');
+                });
+                currentActiveTag = clickedTag;
+            }
+            setTimeout(resizeAllGridItems, 50);
+        }
+
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.grid-item').forEach(item => {
+            observer.observe(item);
+        });
+
+        function showLightbox(src) {
+            const modal = document.getElementById('myModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+        function closeLightbox() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        window.addEventListener('scroll', () => {
+            const btnTop = document.getElementById('btnTop');
+            if (window.scrollY > 300) {
+                btnTop.classList.add('show');
+            } else {
+                btnTop.classList.remove('show');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    <\/script>
+</body>
+</html>`;
+
+                const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html'; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+        }
+    </script>
+</body>
+</html>
