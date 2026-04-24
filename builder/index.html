@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Timeline Builder</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+</head>
+
+<body>
+    <!-- Admin Panel -->
+    <aside class="admin-panel">
+        <header>
+            <h1>Timeline Builder</h1>
+            <h2>타임라인 포트폴리오 생성기</h2>
+        </header>
+
+        <form id="projectForm">
+            <div class="form-group">
+                <label for="year">연도</label>
+                <input type="number" id="year" placeholder="예: 2024" required>
+            </div>
+            <div class="form-group">
+                <label for="title">프로젝트명</label>
+                <input type="text" id="title" placeholder="프로젝트 제목을 입력하세요" required>
+            </div>
+            <div class="form-group">
+                <label for="description">설명</label>
+                <textarea id="description" rows="3" placeholder="프로젝트에 대한 설명을 입력하세요"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="tech">사용 기술 (콤마로 구분)</label>
+                <input type="text" id="tech" placeholder="React, GSAP, Node.js">
+            </div>
+            <button type="submit" class="btn-primary">데이터 추가</button>
+        </form>
+
+        <section>
+            <label>항목 리스트</label>
+            <div id="projectList" class="project-list"></div>
+        </section>
+
+        <section class="gas-section">
+            <label>Google Sheets 연동</label>
+            <div class="form-group" style="margin-bottom:0.5rem">
+                <input type="text" id="gasUrl" placeholder="GAS 웹앱 URL을 입력하세요" style="font-size:0.75rem"
+                    value="https://script.google.com/macros/s/AKfycbyjnb26Vr_oMqctl8yYSNypkIUPAGv-ApIJq3-fR0jUe47MwiMDMp3pxZVQNYYcnRT0/exec">
+            </div>
+            <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem">
+                <button type="button" id="saveToSheetBtn" class="btn-primary"
+                    style="flex:1;padding:0.6rem;font-size:0.75rem;background:#2e7d32;color:#fff">시트에 저장</button>
+                <button type="button" id="loadFromSheetBtn" class="btn-primary"
+                    style="flex:1;padding:0.6rem;font-size:0.75rem;background:#1565c0;color:#fff">시트에서 불러오기</button>
+            </div>
+            <div id="gasStatus" style="font-size:0.7rem;color:#999;min-height:1.2rem"></div>
+        </section>
+
+        <button id="exportBtn" class="btn-primary btn-export">HTML로 추출하기</button>
+    </aside>
+
+    <!-- Preview Panel -->
+    <main class="preview-panel">
+        <!-- Background year text -->
+        <div id="bgYearText" class="bg-year-text">2024</div>
+
+        <!-- Center year badge -->
+        <div class="center-badge" id="centerBadge">
+            <div class="badge-label" id="badgeLabel">Portfolio</div>
+            <div class="badge-year" id="badgeYear">2024</div>
+            <div class="badge-count" id="badgeCount">0 Projects</div>
+        </div>
+
+        <!-- Radial cards container -->
+        <div id="cardsContainer" class="cards-container"></div>
+
+        <!-- Bottom Timeline Bar -->
+        <div class="timeline-bar">
+            <div class="timeline-track" id="timelineTrack"></div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
