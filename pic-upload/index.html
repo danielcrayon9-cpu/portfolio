@@ -44,9 +44,12 @@
         .btn-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #333333; color: #ffffff; border: none; border-radius: 0; font-size: 20px; font-family: 'Pretendard', sans-serif; font-weight: bold; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
         .btn-top.show { opacity: 1; visibility: visible; }
         .btn-top:hover { background-color: #000000; transform: translateY(-5px); }
+        .select-type-link { position: fixed; top: 10px; left: 10px; z-index: 10050; font-family: 'Pretendard', system-ui, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: #3a3a3a; background: rgba(255,255,255,0.95); border: 1px solid rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 999px; box-shadow: 0 1px 5px rgba(0,0,0,0.08); transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+        .select-type-link:hover { color: #111; border-color: rgba(0,0,0,0.18); background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
+    <a class="select-type-link" href="../index.html">Select Type</a>
     <div class="tabs" id="mainTabsContainer">
         <button class="tab-button active" onclick="switchTab('all')">전체</button>
         <button class="tab-button" onclick="switchTab('main')">메인</button>
