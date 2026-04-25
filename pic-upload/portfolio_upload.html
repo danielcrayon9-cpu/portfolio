@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Pretendard', sans-serif;
-            background-color: #606b7b; 
+            background-color: #F9F9F8; 
             margin: 0;
             padding: 40px 20px;
         }
@@ -26,7 +26,7 @@
             max-width: 1400px;
         }
 
-        /* ★ GAS URL 설정 영역 */
+        /* 웹앱 URL (Google Apps Script) 영역 */
         .gas-config {
             width: 100%;
             display: flex;
@@ -139,20 +139,20 @@
 
         .tab-button {
             background: transparent;
-            border: 1px solid #ffffff52;
+            border: 1px solid #00000029;
             border-radius: 30px;
             padding: 8px 20px; 
             font-size: 15px;
             font-weight: 500;
-            color: #ffffff52;
+            color: #00000066;
             cursor: pointer;
             transition: all 0.2s ease;
             box-sizing: border-box;
         }
 
         .tab-button:hover {
-            border-color: rgba(255, 255, 255, 0.7);
-            color: rgba(255, 255, 255, 0.7);
+            border-color: #00000044;
+            color: #00000099;
         }
 
         .tab-button.active { 
@@ -162,11 +162,53 @@
             font-weight: 600;
         }
         
-        .tab-button.tab-hidden-admin { margin-left: auto; font-size: 14px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; box-shadow: none; }
+        .tab-button.tab-hidden-admin { margin-left: auto; font-size: 14px; background: transparent; border: 1px solid #00000029; color: #c92a2a; box-shadow: none; }
         .tab-button.tab-hidden-admin.active { background: #ff6b6b; border-color: #ff6b6b; color: #fff; }
 
-        .tab-setting-btn { font-size: 13px; padding: 6px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 30px; box-shadow: none; cursor:pointer;}
-        .tab-setting-btn:hover { background: rgba(255,255,255,0.1); }
+        .tab-setting-btn { font-size: 13px; padding: 6px 12px; background: transparent; border: 1px solid #00000029; color: #00000066; border-radius: 30px; box-shadow: none; cursor:pointer;}
+        .tab-setting-btn:hover { background: rgba(0, 0, 0, 0.06); }
+
+        /* 년도 필터 (탭 아래) */
+        .year-filter-bar {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 0 4px;
+        }
+        .year-filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-right: 4px;
+        }
+        .year-filter-pill {
+            background: transparent;
+            border: 1px solid #00000029;
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #00000066;
+            cursor: pointer;
+            font-family: 'Pretendard', sans-serif;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .year-filter-pill:hover {
+            border-color: #00000044;
+            color: #00000099;
+        }
+        .year-filter-pill.active {
+            background: #2a2a2e;
+            border-color: #2a2a2e;
+            color: #fff;
+            font-weight: 600;
+        }
 
         /* --- 그리드 및 카드 스타일 --- */
         .portfolio-grid { 
@@ -179,7 +221,7 @@
         .grid-item { position: relative; opacity: 0; cursor: grab; transition: opacity 0.4s ease-out, transform 0.2s; }
         .grid-item.hidden { display: none !important; }
 
-        .grid-item-content { background: #ffffff; border-radius: 0; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column; position: relative; padding: 10px; box-sizing: border-box; }
+        .grid-item-content { background: #ffffff; border-radius: 0; border: 1px solid #ebebeb; display: flex; flex-direction: column; position: relative; padding: 10px; box-sizing: border-box; }
         .grid-item:active { cursor: grabbing; }
         .grid-item.dragging { opacity: 0.5 !important; transform: scale(0.95); z-index: 100; }
         .grid-item img { width: 100%; display: block; border: none; cursor: pointer; }
@@ -255,11 +297,12 @@
     </div>
 
     <div class="controls">
-        <!-- GAS URL 설정 -->
+        <!-- 웹앱 URL: 저장 = URL 보관, 불러오기 = 서버에서 탭·갤러리 새로고침 -->
         <div class="gas-config" id="gasConfig">
-            <label>📡 Google Apps Script URL:</label>
-            <input type="text" id="gasUrlInput" placeholder="배포된 웹앱 URL을 입력하세요 (https://script.google.com/macros/s/...)" />
-            <button onclick="saveGasUrl()">연결</button>
+            <label>웹앱 URL</label>
+            <input type="text" id="gasUrlInput" placeholder="배포된 웹앱 URL (https://script.google.com/macros/s/...)" />
+            <button type="button" onclick="saveGasUrl()">저장하기</button>
+            <button type="button" onclick="loadFromCloud()">불러오기</button>
             <button id="migrateBtn" onclick="migrateLocalToCloud()" style="background: #007bff; margin-left: 10px; display:none;">이전 로컬 데이터 마이그레이션</button>
         </div>
 
@@ -288,12 +331,15 @@
         
         <div class="button-group">
             <button onclick="clearGalleryData()" style="background-color: #f1f1f1; color: #333; border: 1px solid #ddd;">전체 지우기</button>
+            <button type="button" onclick="saveGridOrderManual()" class="btn-sort">순서 저장</button>
             <button onclick="addImages()">목록에 추가</button>
             <button onclick="exportFinalHTML()" class="btn-export">최종 HTML 저장</button>
         </div>
     </div>
 
     <div class="tabs" id="mainTabsContainer"></div>
+
+    <div class="year-filter-bar" id="yearFilterBar" aria-label="년도별 보기"></div>
 
     <div class="portfolio-grid" id="grid"></div>
 
@@ -321,7 +367,7 @@
     <button class="btn-top" id="btnTop" onclick="scrollToTop()">↑</button>
     <input type="file" id="updateImageInput" accept="image/*" style="display:none;">
     <script>
-        // ★★★ Google Apps Script 웹앱 URL ★★★
+        // 웹앱 URL (Google Apps Script 배포 주소)
         let GAS_WEB_APP_URL = localStorage.getItem('portfolio_gas_url') || '';
 
         let tabsConfig = [
@@ -330,19 +376,63 @@
             { id: 'event', name: '이벤트' }
         ];
 
-        let currentTab = 'all'; 
-        let currentActiveYear = null;
+        let currentTab = 'all';
+        /** null = 전체 년도. 탭·태그 필터와 함께 적용 */
+        let yearBarFilter = null;
         let currentActiveTag = null;
-        let currentItemToUpdateId = null; 
+        let currentItemToUpdateId = null;
+        let appListenersBound = false;
 
-        // === GAS URL 관리 ===
-        function saveGasUrl() {
+        // === 웹앱 URL: 저장 / 불러오기 ===
+        async function saveGasUrl() {
             const url = document.getElementById('gasUrlInput').value.trim();
-            if (!url) { alert('URL을 입력해주세요.'); return; }
+            if (!url) { alert('웹앱 URL을 입력해주세요.'); return; }
             GAS_WEB_APP_URL = url;
             localStorage.setItem('portfolio_gas_url', url);
             document.getElementById('gasConfig').classList.add('connected');
-            initApp();
+            document.getElementById('migrateBtn').style.display = 'inline-block';
+            showLoading('데이터를 저장 중입니다.');
+            try {
+                await initApp({ galleryLoadOptions: { manageOverlay: false } });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadTabsFromRemoteOrLocal() {
+            if (GAS_WEB_APP_URL) {
+                try {
+                    const tabResult = await gasGet({ action: 'loadTabs' });
+                    if (tabResult.success && tabResult.config) {
+                        tabsConfig = JSON.parse(tabResult.config);
+                        localStorage.setItem('portfolio_tabs', JSON.stringify(tabsConfig));
+                        return;
+                    }
+                } catch (e) {
+                    const localTabs = localStorage.getItem('portfolio_tabs');
+                    if (localTabs) tabsConfig = JSON.parse(localTabs);
+                    return;
+                }
+            }
+            const localTabs = localStorage.getItem('portfolio_tabs');
+            if (localTabs) tabsConfig = JSON.parse(localTabs);
+        }
+
+        async function loadFromCloud() {
+            let url = document.getElementById('gasUrlInput').value.trim();
+            if (!url) url = (GAS_WEB_APP_URL || localStorage.getItem('portfolio_gas_url') || '').trim();
+            if (!url) {
+                alert('웹앱 URL을 입력한 뒤 [저장하기]하거나, 저장된 URL이 있어야 [불러오기]를 할 수 있습니다.');
+                return;
+            }
+            GAS_WEB_APP_URL = url;
+            localStorage.setItem('portfolio_gas_url', url);
+            document.getElementById('gasUrlInput').value = url;
+            document.getElementById('gasConfig').classList.add('connected');
+            document.getElementById('migrateBtn').style.display = 'inline-block';
+            await loadTabsFromRemoteOrLocal();
+            renderTabsUI();
+            await loadGalleryData();
         }
 
         function showLoading(text) {
@@ -358,16 +448,54 @@
             const url = new URL(GAS_WEB_APP_URL);
             Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
             const res = await fetch(url.toString());
-            return await res.json();
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('gasGet non-JSON (HTTP ' + res.status + '):', text.slice(0, 400));
+                return {
+                    success: false,
+                    error: '서버가 JSON이 아닌 응답을 반환했습니다. 웹앱 URL이 …/exec 로 끝나는지, "액세스: 모든 사용자"로 배포됐는지 확인하세요.'
+                };
+            }
         }
 
+        // GAS 웹앱은 application/json POST 시 CORS 사전(OPTIONS)에서 막히는 경우가 많음 → text/plain + JSON 문자열
         async function gasPost(data) {
-            const res = await fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            return await res.json();
+            let res;
+            let text;
+            try {
+                res = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(data)
+                });
+                text = await res.text();
+            } catch (err) {
+                return { success: false, error: '네트워크 오류: ' + err.message };
+            }
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('gasPost non-JSON (HTTP ' + res.status + '):', text.slice(0, 300));
+                return {
+                    success: false,
+                    error: 'JSON이 아닌 응답입니다. (HTTP ' + res.status + ') 웹앱을 "모든 사용자"로 배포했는지 확인하세요.'
+                };
+            }
         }
+
+        // === 그리드 드래그: 순서는 [순서 저장] 버튼에서만 시트에 반영 ===
+        (function setupGridDragDnD() {
+            const grid = document.getElementById('grid');
+            if (!grid) return;
+            grid.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+            });
+            grid.addEventListener('drop', (e) => { e.preventDefault(); });
+        })();
 
         // === 탭 관리 ===
         function renderTabsUI() {
@@ -527,7 +655,7 @@
         }
 
         async function processFiles(files) {
-            if (!GAS_WEB_APP_URL) { alert('Google Apps Script URL을 먼저 설정해주세요.'); return; }
+            if (!GAS_WEB_APP_URL) { alert('웹앱 URL을 [저장하기]한 뒤 이미지를 추가해주세요.'); return; }
 
             const tabVal = document.querySelector('input[name="batchTab"]:checked').value; 
             const captionVal = document.getElementById('batchCaption').value.trim();
@@ -584,6 +712,8 @@
             }
 
             hideLoading();
+            rebuildYearFilterBar();
+            applyGridVisibility();
         }
 
         async function addImages() {
@@ -610,91 +740,98 @@
             if(firstRadio) firstRadio.checked = true; 
         }
 
-        // === 탭 전환 & 필터 ===
-        function switchTab(tab) {
-            currentTab = tab;
-            const allItems = document.querySelectorAll('.grid-item');
-            
-            const allTabButtons = document.querySelectorAll('#mainTabsContainer .tab-button');
-            allTabButtons.forEach(btn => btn.classList.remove('active'));
-            
-            const activeBtn = document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('${tab}')"]`);
-            if(activeBtn) activeBtn.classList.add('active');
-
-            currentActiveYear = null;
-            currentActiveTag = null;
-            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
-            document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
-
+        // === 탭·년도·태그 필터 (그리드 표시) ===
+        function applyGridVisibility() {
+            const allItems = document.querySelectorAll('#grid > .grid-item');
             allItems.forEach(item => {
                 const itemTab = item.getAttribute('data-tabCategory');
-                const isHidden = item.getAttribute('data-hidden') === 'true';
-                
-                if (tab === 'hidden') {
-                    if (isHidden) item.classList.remove('hidden');
-                    else item.classList.add('hidden');
-                } 
-                else {
-                    if (isHidden) {
-                        item.classList.add('hidden');
-                    } else if (tab === 'all') {
-                        item.classList.remove('hidden');
-                    } else if (tab === itemTab) {
-                        item.classList.remove('hidden');
+                const isHiddenItem = item.getAttribute('data-hidden') === 'true';
+                let show = false;
+                if (currentTab === 'hidden') {
+                    show = isHiddenItem;
+                } else {
+                    if (isHiddenItem) {
+                        show = false;
+                    } else if (currentTab === 'all') {
+                        show = true;
                     } else {
-                        item.classList.add('hidden');
+                        show = (itemTab === currentTab);
                     }
                 }
+                if (show && yearBarFilter !== null && yearBarFilter !== '') {
+                    const yi = item.querySelector('.editable-year');
+                    const ys = yi ? yi.value.trim() : '';
+                    show = (ys === yearBarFilter);
+                }
+                if (show && currentActiveTag !== null && currentActiveTag !== '') {
+                    const ti = item.querySelector('.editable-tag');
+                    const ts = ti ? ti.value : '';
+                    show = ts.includes(currentActiveTag);
+                }
+                item.classList.toggle('hidden', !show);
+            });
+            document.querySelectorAll('.editable-year').forEach(y => {
+                y.classList.toggle('active', yearBarFilter !== null && yearBarFilter !== '' && y.value.trim() === yearBarFilter);
             });
             setTimeout(resizeAllGridItems, 50);
+            applyScrollFade();
         }
 
-        function filterByYearEditor(clickedYear, element) {
-            const allItems = document.querySelectorAll('.grid-item');
-            document.querySelectorAll('#mainTabsContainer .tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('all')"]`).classList.add('active');
+        function rebuildYearFilterBar() {
+            const bar = document.getElementById('yearFilterBar');
+            if (!bar) return;
+            bar.replaceChildren();
+            const label = document.createElement('span');
+            label.className = 'year-filter-label';
+            label.textContent = '년도';
+            bar.appendChild(label);
+
+            function addYearPill(text, yearVal) {
+                const isAll = yearVal === '';
+                const active = isAll ? (yearBarFilter === null || yearBarFilter === '') : (yearBarFilter === yearVal);
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'year-filter-pill' + (active ? ' active' : '');
+                b.textContent = text;
+                b.addEventListener('click', () => {
+                    if (isAll) {
+                        yearBarFilter = null;
+                    } else {
+                        yearBarFilter = (yearBarFilter === yearVal) ? null : yearVal;
+                    }
+                    currentActiveTag = null;
+                    document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
+                    rebuildYearFilterBar();
+                    applyGridVisibility();
+                });
+                bar.appendChild(b);
+            }
+
+            addYearPill('전체', '');
+
+            const years = new Set();
+            document.querySelectorAll('#grid > .grid-item .editable-year').forEach(inp => {
+                const v = inp.value.trim();
+                if (v) years.add(v);
+            });
+            Array.from(years).sort((a, b) => {
+                const na = parseInt(a, 10);
+                const nb = parseInt(b, 10);
+                if (!isNaN(na) && !isNaN(nb) && na !== nb) return nb - na;
+                return String(b).localeCompare(String(a));
+            }).forEach(y => addYearPill(y, y));
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            yearBarFilter = null;
             currentActiveTag = null;
-            document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
-
-            if (currentActiveYear === clickedYear) {
-                allItems.forEach(item => { if(item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden'); });
-                currentActiveYear = null;
-            } else {
-                allItems.forEach(item => {
-                    const yearInput = item.querySelector('.editable-year');
-                    const yearStr = yearInput ? yearInput.value.trim() : '';
-                    if (yearStr === clickedYear && item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden');
-                    else item.classList.add('hidden');
-                });
-                document.querySelectorAll('.editable-year').forEach(y => { if (y.value.trim() === clickedYear) y.classList.add('active'); });
-                currentActiveYear = clickedYear;
-            }
-            setTimeout(resizeAllGridItems, 50);
-        }
-
-        function filterByTagEditor(clickedTag, element) {
-            const allItems = document.querySelectorAll('.grid-item');
             document.querySelectorAll('#mainTabsContainer .tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('all')"]`).classList.add('active');
-            currentActiveYear = null;
-            document.querySelectorAll('.editable-year').forEach(y => y.classList.remove('active'));
+            const activeBtn = document.querySelector(`#mainTabsContainer .tab-button[onclick="switchTab('${tab}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
             document.querySelectorAll('.filter-tag-btn').forEach(t => t.classList.remove('active'));
-
-            if (currentActiveTag === clickedTag) {
-                allItems.forEach(item => { if(item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden'); });
-                currentActiveTag = null;
-            } else {
-                allItems.forEach(item => {
-                    const tagInput = item.querySelector('.editable-tag');
-                    const tagsStr = tagInput ? tagInput.value : '';
-                    if (tagsStr.includes(clickedTag) && item.getAttribute('data-hidden') !== 'true') item.classList.remove('hidden');
-                    else item.classList.add('hidden');
-                });
-                document.querySelectorAll('.filter-tag-btn').forEach(t => { if (t.innerText === clickedTag) t.classList.add('active'); });
-                currentActiveTag = clickedTag;
-            }
-            setTimeout(resizeAllGridItems, 50);
+            rebuildYearFilterBar();
+            applyGridVisibility();
         }
 
         function applyScrollFade() {
@@ -728,8 +865,8 @@
             item.addEventListener('dragstart', () => { item.classList.add('dragging'); item.style.opacity = '0.5'; });
             item.addEventListener('dragend', () => { 
                 item.classList.remove('dragging'); 
+                item.style.opacity = '';
                 applyScrollFade(); 
-                updateOrderInDB(); 
                 resizeAllGridItems(); 
             });
 
@@ -785,7 +922,7 @@
             tabSelect.addEventListener('change', function(e) {
                 updateData(id, 'tabCategory', this.value);
                 item.setAttribute('data-tabCategory', this.value);
-                switchTab(currentTab); 
+                applyGridVisibility();
             });
             tabSelect.addEventListener('blur', () => item.setAttribute('draggable', true));
 
@@ -843,6 +980,20 @@
                             const btn = document.createElement('span');
                             btn.className = 'filter-tag-btn';
                             btn.innerText = t;
+                            btn.addEventListener('click', (ev) => {
+                                ev.stopPropagation();
+                                yearBarFilter = null;
+                                if (currentActiveTag === t) currentActiveTag = null;
+                                else currentActiveTag = t;
+                                document.querySelectorAll('.filter-tag-btn').forEach(x => x.classList.remove('active'));
+                                if (currentActiveTag) {
+                                    document.querySelectorAll('.filter-tag-btn').forEach(x => {
+                                        if (x.innerText === currentActiveTag) x.classList.add('active');
+                                    });
+                                }
+                                rebuildYearFilterBar();
+                                applyGridVisibility();
+                            });
                             tagDisplayArea.appendChild(btn);
                         }
                     });
@@ -892,11 +1043,16 @@
                     val = val.split(/\s+/).map(t => t.startsWith('#') ? t : '#' + t).join(' ');
                     this.value = val;
                 }
-                updateData(id, 'tag', this.value); 
+                updateData(id, 'tag', this.value);
+                applyGridVisibility();
             });
 
             captionEditField.addEventListener('change', function() { updateData(id, 'caption', this.value); });
-            yearEditField.addEventListener('change', function() { updateData(id, 'year', this.value); });
+            yearEditField.addEventListener('change', function() {
+                updateData(id, 'year', this.value);
+                rebuildYearFilterBar();
+                applyGridVisibility();
+            });
             urlEditField.addEventListener('change', function() { updateData(id, 'url', this.value); });
 
             caption.appendChild(captionHeader);
@@ -912,6 +1068,8 @@
                 setTimeout(() => { 
                     grid.removeChild(item); 
                     deleteImage(id); 
+                    rebuildYearFilterBar();
+                    applyGridVisibility();
                     resizeAllGridItems(); 
                 }, 300); 
             };
@@ -945,7 +1103,7 @@
                     this.classList.remove('hidden-mode');
                     this.innerText = '숨기기';
                 }
-                switchTab(currentTab);
+                applyGridVisibility();
             };
 
             contentWrap.appendChild(img);
@@ -1013,21 +1171,70 @@
         function closeLightbox() { document.getElementById('myModal').style.display = "none"; }
 
         // === 데이터 CRUD (Google Sheets via GAS) ===
+        /** 시트 목록: 연도 내림차순 → 같은 연도 안에서 order 오름차순 */
+        function sortItemsForDisplay(items) {
+            return items.slice().sort((a, b) => {
+                const yearA = parseInt(String(a.year != null ? a.year : '').trim(), 10);
+                const yearB = parseInt(String(b.year != null ? b.year : '').trim(), 10);
+                const yA = isNaN(yearA) ? 0 : yearA;
+                const yB = isNaN(yearB) ? 0 : yearB;
+                if (yB !== yA) return yB - yA;
+                const oa = Number(a.order) || 0;
+                const ob = Number(b.order) || 0;
+                if (oa !== ob) return oa - ob;
+                return String(a.id).localeCompare(String(b.id));
+            });
+        }
+
         function updateData(id, field, newValue) {
             if (!GAS_WEB_APP_URL) return;
             gasGet({ action: 'update', id: id, field: field, value: String(newValue) })
                 .catch(err => console.error('Update error:', err));
         }
 
-        function updateOrderInDB() {
-            if (!GAS_WEB_APP_URL) return;
-            const items = document.querySelectorAll('.grid-item');
+        /**
+         * 현재 그리드 DOM 순서를 위에서부터 읽어, 같은 연도(년도 입력값)끼리만 0,1,2… order 부여 후 시트에 반영.
+         * @returns {Promise<{ok:boolean, error?:string}>}
+         */
+        async function persistGridOrderToServer() {
+            if (!GAS_WEB_APP_URL) return { ok: false, error: '웹앱 URL이 없습니다.' };
+            const nodes = document.querySelectorAll('#grid > .grid-item');
+            if (nodes.length === 0) return { ok: true };
+            const perYearNext = Object.create(null);
             const orderData = [];
-            items.forEach((itemNode, index) => {
-                orderData.push({ id: itemNode.dataset.id, order: index });
+            nodes.forEach((itemNode) => {
+                const yearInput = itemNode.querySelector('.editable-year');
+                const yearKey = yearInput ? String(yearInput.value || '').trim() : '';
+                if (!Object.prototype.hasOwnProperty.call(perYearNext, yearKey)) {
+                    perYearNext[yearKey] = 0;
+                }
+                const ord = perYearNext[yearKey]++;
+                orderData.push({ id: String(itemNode.dataset.id), order: ord });
             });
-            gasGet({ action: 'updateOrder', orderData: JSON.stringify(orderData) })
-                .catch(err => console.error('Order update error:', err));
+            try {
+                const result = await gasPost({ action: 'updateOrder', orderData });
+                if (!result || result.success !== true) {
+                    return { ok: false, error: (result && result.error) ? result.error : '서버가 순서 저장에 실패했습니다.' };
+                }
+                return { ok: true };
+            } catch (err) {
+                return { ok: false, error: err.message };
+            }
+        }
+
+        async function saveGridOrderManual() {
+            if (!GAS_WEB_APP_URL) {
+                alert('웹앱 URL을 [저장하기]한 뒤 순서를 저장할 수 있습니다.');
+                return;
+            }
+            showLoading('순서 저장 중...');
+            try {
+                const r = await persistGridOrderToServer();
+                if (r.ok) alert('같은 연도 안에서의 순서가 시트에 저장되었습니다. (연도별 정렬은 그대로입니다.)');
+                else alert('순서 저장 실패: ' + (r.error || '알 수 없는 오류'));
+            } finally {
+                hideLoading();
+            }
         }
 
         function deleteImage(id) {
@@ -1036,30 +1243,36 @@
                 .catch(err => console.error('Delete error:', err));
         }
 
-        async function loadGalleryData() {
+        async function loadGalleryData(options = {}) {
+            const { loadingText = '데이터 불러오는 중...', manageOverlay = true } = options;
             if (!GAS_WEB_APP_URL) return;
-            showLoading('데이터 불러오는 중...');
+            if (manageOverlay) showLoading(loadingText);
             try {
                 const result = await gasGet({ action: 'list' });
-                if (result.success && result.items) {
-                    document.getElementById('grid').innerHTML = '';
-                    const items = result.items;
-                    items.sort((a, b) => {
-                        const yearA = parseInt(a.year) || 0;
-                        const yearB = parseInt(b.year) || 0;
-                        if (yearB !== yearA) return yearB - yearA;
-                        return a.order - b.order;
-                    });
-                    items.forEach(item => {
-                        createGridItem(item.id, item.img_url, item.caption, String(item.year), item.tag, item.url, item.isPc, item.isResponsive, item.isMobile, item.isHidden, item.tabCategory);
-                    });
-                    switchTab('all');
+                if (!result || typeof result !== 'object') {
+                    alert('목록 응답이 올바르지 않습니다.');
+                    return;
                 }
+                if (!result.success) {
+                    alert('목록을 불러오지 못했습니다.\n\n' + (result.error || '서버가 success=false를 반환했습니다.'));
+                    return;
+                }
+                if (!Array.isArray(result.items)) {
+                    alert('목록 형식 오류: items 배열이 없습니다.');
+                    return;
+                }
+                document.getElementById('grid').innerHTML = '';
+                const items = sortItemsForDisplay(result.items);
+                items.forEach(item => {
+                    createGridItem(item.id, item.img_url, item.caption, String(item.year), item.tag, item.url, item.isPc, item.isResponsive, item.isMobile, item.isHidden, item.tabCategory);
+                });
+                switchTab('all');
             } catch (err) {
                 console.error('Load error:', err);
                 alert('데이터 불러오기 실패: ' + err.message);
+            } finally {
+                if (manageOverlay) hideLoading();
             }
-            hideLoading();
         }
 
         async function clearGalleryData() {
@@ -1069,6 +1282,8 @@
                 try {
                     await gasGet({ action: 'clearAll' });
                     document.getElementById('grid').innerHTML = '';
+                    rebuildYearFilterBar();
+                    applyGridVisibility();
                 } catch (err) {
                     alert('삭제 오류: ' + err.message);
                 }
@@ -1078,23 +1293,27 @@
 
         // === HTML 내보내기 (Drive URL 기반) ===
         async function exportFinalHTML() {
-            if (!GAS_WEB_APP_URL) { alert('Google Apps Script URL을 먼저 설정해주세요.'); return; }
+            if (!GAS_WEB_APP_URL) { alert('웹앱 URL을 [저장하기]한 뒤 최종 HTML 저장을 사용해주세요.'); return; }
             showLoading('HTML 생성 중...');
             try {
                 const result = await gasGet({ action: 'list' });
-                if (!result.success || !result.items || result.items.length === 0) {
-                    alert("등록된 이미지가 없습니다.");
+                if (!result || typeof result !== 'object') {
+                    alert('목록 응답이 올바르지 않습니다.');
                     hideLoading();
                     return;
                 }
-                
-                const items = result.items;
-                items.sort((a, b) => {
-                    const yearA = parseInt(a.year) || 0;
-                    const yearB = parseInt(b.year) || 0;
-                    if (yearB !== yearA) return yearB - yearA;
-                    return a.order - b.order;
-                });
+                if (!result.success) {
+                    alert('목록을 불러올 수 없습니다.\n\n' + (result.error || ''));
+                    hideLoading();
+                    return;
+                }
+                if (!Array.isArray(result.items) || result.items.length === 0) {
+                    alert('등록된 이미지가 없습니다.');
+                    hideLoading();
+                    return;
+                }
+
+                const items = sortItemsForDisplay(result.items);
 
                 let exportTabsHtml = `<button class="tab-button active" onclick="switchTab('all')">전체</button>`;
                 tabsConfig.forEach(tab => {
@@ -1205,10 +1424,10 @@
     <title>Portfolio</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #606b7b; margin: 0; padding: 40px 20px; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #F9F9F8; margin: 0; padding: 40px 20px; }
         .tabs { display: flex; gap: 10px; width: 100%; max-width: 1400px; margin: 0 auto 30px; background-color: transparent; box-sizing: border-box; flex-wrap: wrap; align-items: center; }
-        .tab-button { background: transparent; border: 1px solid #ffffff52; border-radius: 30px; padding: 8px 20px; font-size: 15px; font-weight: 500; color: #ffffff52; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; }
-        .tab-button:hover { border-color: rgba(255, 255, 255, 0.7); color: rgba(255, 255, 255, 0.7); }
+        .tab-button { background: transparent; border: 1px solid #00000029; border-radius: 30px; padding: 8px 20px; font-size: 15px; font-weight: 500; color: #00000066; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; }
+        .tab-button:hover { border-color: #00000044; color: #00000099; }
         .tab-button.active { background: #2a2a2e; border-color: #2a2a2e; color: #ffffff; font-weight: 600; }
         .portfolio-grid { margin: 0 auto; width: 100%; max-width: 1400px; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; grid-auto-rows: 10px; align-items: start; }
         @media (max-width: 1200px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -1217,7 +1436,7 @@
         .grid-item { position: relative; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .grid-item.hidden { display: none !important; }
         .grid-item.visible { opacity: 1; transform: translateY(0); }
-        .grid-item-content { background: #ffffff; border-radius: 0; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; }
+        .grid-item-content { background: #ffffff; border-radius: 0; border: 1px solid #ebebeb; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; }
         .grid-item img { width: 100%; display: block; border: none; box-sizing: border-box; cursor: pointer; }
         .caption { padding: 12px 0 8px 0; text-align: left; display: flex; flex-direction: column; gap: 6px; }
         .caption-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
@@ -1281,7 +1500,7 @@ ${gridHtml}
 
         // === 이전 로컬 데이터 마이그레이션 (IndexedDB -> GAS) ===
         async function migrateLocalToCloud() {
-            if (!GAS_WEB_APP_URL) { alert('Google Apps Script URL을 먼저 설정하고 연결해주세요.'); return; }
+            if (!GAS_WEB_APP_URL) { alert('웹앱 URL을 [저장하기]한 뒤 마이그레이션을 진행해주세요.'); return; }
             
             const dbName = "PortfolioGalleryDB";
             const storeName = "images";
@@ -1355,8 +1574,7 @@ ${gridHtml}
         }
 
         // === 앱 초기화 ===
-        async function initApp() {
-            // GAS URL 상태 표시
+        async function initApp(options = {}) {
             const savedUrl = localStorage.getItem('portfolio_gas_url');
             if (savedUrl) {
                 GAS_WEB_APP_URL = savedUrl;
@@ -1365,34 +1583,19 @@ ${gridHtml}
                 document.getElementById('migrateBtn').style.display = 'inline-block';
             }
 
-            // 탭 설정 불러오기
-            if (GAS_WEB_APP_URL) {
-                try {
-                    const tabResult = await gasGet({ action: 'loadTabs' });
-                    if (tabResult.success && tabResult.config) {
-                        tabsConfig = JSON.parse(tabResult.config);
-                        localStorage.setItem('portfolio_tabs', JSON.stringify(tabsConfig));
-                    } else {
-                        const localTabs = localStorage.getItem('portfolio_tabs');
-                        if (localTabs) tabsConfig = JSON.parse(localTabs);
-                    }
-                } catch(e) {
-                    const localTabs = localStorage.getItem('portfolio_tabs');
-                    if (localTabs) tabsConfig = JSON.parse(localTabs);
-                }
-            } else {
-                const localTabs = localStorage.getItem('portfolio_tabs');
-                if (localTabs) tabsConfig = JSON.parse(localTabs);
-            }
+            await loadTabsFromRemoteOrLocal();
 
             renderTabsUI();
-            loadGalleryData();
+            await loadGalleryData(options.galleryLoadOptions);
 
-            window.addEventListener('load', applyScrollFade);
-            window.addEventListener('scroll', () => {
-                requestAnimationFrame(applyScrollFade);
-                toggleTopButton();
-            });
+            if (!appListenersBound) {
+                appListenersBound = true;
+                window.addEventListener('load', applyScrollFade);
+                window.addEventListener('scroll', () => {
+                    requestAnimationFrame(applyScrollFade);
+                    toggleTopButton();
+                });
+            }
         }
 
         // 앱 시작

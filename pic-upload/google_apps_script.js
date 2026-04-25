@@ -13,6 +13,12 @@
  *    - 실행 계정: "나"
  *    - 액세스 권한: "모든 사용자"
  * 5. 배포된 URL을 portfolio_upload.html의 GAS_WEB_APP_URL에 설정합니다.
+ *    (반드시 …/macros/s/…/exec 로 끝나는 링크. /dev 가 아닙니다.)
+ * 6. 붙여넣은 뒤 SPREADSHEET_ID / DRIVE_FOLDER_ID 를 반드시 본인 값으로 바꾸고
+ *    [저장] → 배포에서 "새 버전"으로 다시 배포해야 합니다. (예시 문자열 그대로 두면 목록이 비어 보입니다.)
+ * 7. 브라우저에서 웹앱URL?action=ping 열어 JSON이 오는지 확인할 수 있습니다.
+ * 8. portfolio_upload.html 은 POST 시 application/json 대신 text/plain 으로 JSON을 보냅니다.
+ *    (그대로 두면 됩니다. 스크립트만 최신으로 유지하세요.)
  * 
  * [Google Sheets ID 확인 방법]
  * URL에서: https://docs.google.com/spreadsheets/d/여기가_SPREADSHEET_ID/edit
@@ -23,11 +29,24 @@
  */
 
 // ★★★ 아래 두 값을 본인의 것으로 변경하세요 ★★★
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
-const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID_HERE';
+const SPREADSHEET_ID = '14hRfUiYgCask6bN78DQX6UzjMxueAP9iGZX7Ys4cD_U';
+const DRIVE_FOLDER_ID = '1sSiYkbzI_kYFkjvEF2OVqP9mEBwy6yVt';
 
 const SHEET_NAME = 'PortfolioData';
 const TABS_SHEET_NAME = 'TabsConfig';
+
+/**
+ * 스프레드시트/드라이브 ID가 아직 예시 값이면 안내 메시지 반환 (그 외 null)
+ */
+function getConfigError_() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === 'YOUR_SPREADSHEET_ID_HERE') {
+    return 'SPREADSHEET_ID를 본인 시트 ID로 바꾼 뒤 [저장]하고 웹앱을 새 버전으로 다시 배포하세요. (스크립트 파일 맨 위)';
+  }
+  if (!DRIVE_FOLDER_ID || DRIVE_FOLDER_ID === 'YOUR_DRIVE_FOLDER_ID_HERE') {
+    return 'DRIVE_FOLDER_ID를 본인 드라이브 폴더 ID로 바꾼 뒤 [저장]하고 웹앱을 새 버전으로 다시 배포하세요. (스크립트 파일 맨 위)';
+  }
+  return null;
+}
 
 /**
  * 스프레드시트와 시트 초기화
@@ -47,17 +66,28 @@ function getOrCreateSheet(sheetName) {
 }
 
 /**
- * POST 요청 처리 — 이미지 업로드
+ * POST 요청 처리 — 이미지 업로드 / 순서 저장 등
+ * (클라이언트는 CORS 회피를 위해 Content-Type: text/plain 으로 JSON 문자열을 보냅니다.)
  */
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    var cfgErr = getConfigError_();
+    if (cfgErr) {
+      return jsonResponse({ success: false, error: cfgErr });
+    }
+    if (!e || !e.postData || !e.postData.contents) {
+      return jsonResponse({ success: false, error: 'POST 본문이 비어 있습니다.' });
+    }
+    var raw = String(e.postData.contents).replace(/^\uFEFF/, '');
+    const data = JSON.parse(raw);
     const action = data.action || 'upload';
 
     if (action === 'upload') {
       return handleUpload(data);
     } else if (action === 'updateImage') {
       return handleUpdateImage(data);
+    } else if (action === 'updateOrder') {
+      return handleUpdateOrder(data);
     }
 
     return jsonResponse({ success: false, error: 'Unknown action' });
@@ -71,9 +101,21 @@ function doPost(e) {
  */
 function doGet(e) {
   try {
-    const action = e.parameter.action || 'list';
+    var cfgErr = getConfigError_();
+    var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : 'list';
+
+    if (cfgErr && action !== 'ping') {
+      return jsonResponse({ success: false, error: cfgErr, items: [] });
+    }
 
     switch (action) {
+      case 'ping':
+        return jsonResponse({
+          success: true,
+          message: '웹앱 응답 정상',
+          configOk: !cfgErr,
+          configError: cfgErr || null
+        });
       case 'list':
         return handleList();
       case 'update':
@@ -215,6 +257,9 @@ function handleList() {
 
   for (let i = 1; i < values.length; i++) {
     const row = values[i];
+    if (row[0] === '' || row[0] === null || row[0] === undefined) {
+      continue;
+    }
     items.push({
       id: row[0],
       img_url: row[1],
@@ -317,13 +362,22 @@ function handleUpdateOrder(params) {
   const dataRange = sheet.getDataRange();
   const values = dataRange.getValues();
 
-  const orderData = JSON.parse(params.orderData);
-  // orderData = [{ id: '...', order: 0 }, { id: '...', order: 1 }, ...]
+  var orderData = params.orderData;
+  if (typeof orderData === 'string') {
+    orderData = JSON.parse(orderData);
+  }
+  if (!Array.isArray(orderData)) {
+    return jsonResponse({ success: false, error: 'Invalid orderData' });
+  }
 
-  for (const item of orderData) {
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][0] === item.id) {
-        sheet.getRange(i + 1, 11).setValue(item.order); // order column (11th, 1-based)
+  for (var j = 0; j < orderData.length; j++) {
+    var item = orderData[j];
+    var idStr = String(item.id);
+    var ord = Number(item.order);
+    if (isNaN(ord)) ord = 0;
+    for (var i = 1; i < values.length; i++) {
+      if (String(values[i][0]) === idStr) {
+        sheet.getRange(i + 1, 11).setValue(ord);
         break;
       }
     }
