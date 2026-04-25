@@ -565,10 +565,14 @@ dt.appendChild(c);dt.appendChild(lb);
 dt.addEventListener('click',function(){
 var el=document.querySelector('.ygl[data-year="'+y+'"]');
 if(!el)return;
+if(window.innerWidth<=1000){
 var vh=window.innerHeight;var vl=document.querySelector('.vl');
-var m=window.innerWidth<=1000&&vl?vl.offsetHeight+vh*0.08:vh*0.4;
+var m=vl?vl.offsetHeight+vh*0.08:vh*0.4;
 var top=el.getBoundingClientRect().top+window.pageYOffset;
-window.scrollTo({top:Math.max(0,top-m),behavior:'smooth'})});
+window.scrollTo({top:Math.max(0,top-m),behavior:'smooth'});
+}else{
+window.scrollTo({top:el.offsetTop-window.innerHeight*0.4,behavior:'smooth'});
+}});
 tk.appendChild(dt)});
 tn.appendChild(tk)}
 function hS(){
@@ -585,11 +589,16 @@ if(r.top<fz&&r.top>-r.height){l.style.opacity=Math.max(0,r.top/fz)}
 else if(r.top<=-r.height){l.style.opacity=0}
 else if(r.top>bfs){l.style.opacity=Math.max(0,(vh-r.top)/fz)}
 else{l.style.opacity=1}});
-var vl=document.querySelector('.vl');
-var bias=window.innerWidth<=1000&&vl?Math.min(vh*0.42,Math.max(72,vl.getBoundingClientRect().bottom+vh*0.06)):vh*0.22;
 var ay=null;var gl=document.querySelectorAll('.ygl');
+if(window.innerWidth<=1000){
+var vl=document.querySelector('.vl');
+var bias=vl?Math.min(vh*0.42,Math.max(72,vl.getBoundingClientRect().bottom+vh*0.06)):vh*0.22;
 for(var gi=0;gi<gl.length;gi++){
 if(gl[gi].getBoundingClientRect().top<=bias)ay=parseInt(gl[gi].dataset.year)}
+}else{
+gl.forEach(function(l){var r=l.getBoundingClientRect();
+if(r.top<vh*0.5){ay=parseInt(l.dataset.year)}});
+}
 if(ay===null&&gl.length>0){ay=parseInt(gl[0].dataset.year)}
 if(ay!==null){uY(ay);uTD(ay)}}
 function uTD(y){var dots=document.querySelectorAll('.td');
