@@ -31,11 +31,25 @@
 
     <title>Portfolio</title>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@47,400,0,0">
     <link rel="stylesheet" href="css/default.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
 
 <body class="index2-page">
+
+    <div class="index-menu">
+        <a href="#" class="index-menu__toggle" aria-expanded="false">
+            <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+            <span class="blind">메뉴 열기</span>
+        </a>
+        <ul>
+            <li><a href="/">Intro</a></li>
+            <li><a href="pic-upload/index.html">Portfolio</a></li>
+            <li><a href="scroll-builder/index.html">Projects for year</a></li>
+            <li><a href="career/index.html">Profile</a></li>
+        </ul>
+    </div>
 
     <!-- slogan: 줄 등장 후 all_mark 공 낙하(상단→착지·360°·튐) -->
     <div class="section slogan">
@@ -497,6 +511,153 @@
     observeReveal(profile, "profile-revealed", {
         threshold: 0.12,
         rootMargin: "0px 0px -10% 0px"
+    });
+})();
+</script>
+<script>
+(function () {
+    var menu = document.querySelector(".index-menu");
+    var toggle = menu && menu.querySelector(".index-menu__toggle");
+    var icon = toggle && toggle.querySelector(".material-symbols-outlined");
+    var label = toggle && toggle.querySelector(".blind");
+    var links = menu ? menu.querySelectorAll("ul a") : [];
+    var darkSectionNames = ["slogan", "profile"];
+    var blackButtonSectionNames = ["user_experience", "year"];
+
+    if (!menu || !toggle || !icon) return;
+
+    function setMenuOpen(isOpen) {
+        menu.classList.toggle("is-open", isOpen);
+        document.body.classList.toggle("index-menu-open", isOpen);
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        icon.textContent = isOpen ? "close" : "menu";
+        if (label) label.textContent = isOpen ? "메뉴 닫기" : "메뉴 열기";
+    }
+
+    function updateMenuColor() {
+        if (menu.classList.contains("is-open")) return;
+
+        var toggleRect = toggle.getBoundingClientRect();
+        var checkX = toggleRect.left + toggleRect.width * 0.5;
+        var checkY = toggleRect.top + toggleRect.height * 0.5;
+        var elementsAtButton = document.elementsFromPoint(checkX, checkY);
+        var currentSection = null;
+
+        Array.prototype.some.call(elementsAtButton, function (element) {
+            if (element.closest && element.closest(".index-menu")) return false;
+            currentSection = element.closest && element.closest(".section");
+            return !!currentSection;
+        });
+
+        var sectionClass = currentSection ? currentSection.className : "";
+        var isDarkSection = darkSectionNames.some(function (name) {
+            return sectionClass.indexOf(name) > -1;
+        });
+        var isBlackButtonSection = blackButtonSectionNames.some(function (name) {
+            return sectionClass.indexOf(name) > -1;
+        });
+
+        menu.classList.toggle("is-dark-section", isDarkSection);
+        menu.classList.toggle("is-black-button", !isDarkSection && isBlackButtonSection);
+    }
+
+    toggle.addEventListener("click", function (event) {
+        event.preventDefault();
+        setMenuOpen(!menu.classList.contains("is-open"));
+    });
+
+    links.forEach(function (link) {
+        link.addEventListener("click", function () {
+            setMenuOpen(false);
+        });
+    });
+
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && menu.classList.contains("is-open")) {
+            setMenuOpen(false);
+            toggle.focus();
+        }
+    });
+
+    window.addEventListener("scroll", updateMenuColor);
+    window.addEventListener("resize", updateMenuColor);
+    updateMenuColor();
+})();
+</script>
+<script>
+(function () {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var scroller = document.scrollingElement || document.documentElement;
+    var currentY = window.scrollY || scroller.scrollTop || 0;
+    var targetY = currentY;
+    var rafId = null;
+    var wheelPower = 0.72;
+    var ease = 0.11;
+
+    function getMaxScroll() {
+        return Math.max(0, scroller.scrollHeight - window.innerHeight);
+    }
+
+    function clamp(value, min, max) {
+        return Math.max(min, Math.min(value, max));
+    }
+
+    function stopAnimation() {
+        if (!rafId) return;
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+
+    function animateScroll() {
+        var distance = targetY - currentY;
+
+        if (Math.abs(distance) < 0.5) {
+            currentY = targetY;
+            window.scrollTo(0, targetY);
+            rafId = null;
+            return;
+        }
+
+        currentY += distance * ease;
+        window.scrollTo(0, currentY);
+        rafId = requestAnimationFrame(animateScroll);
+    }
+
+    function startAnimation() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(animateScroll);
+    }
+
+    window.addEventListener(
+        "wheel",
+        function (event) {
+            if (event.ctrlKey) return;
+            if (document.body.classList.contains("index-menu-open")) return;
+
+            event.preventDefault();
+            currentY = window.scrollY || scroller.scrollTop || currentY;
+            targetY = clamp(targetY + event.deltaY * wheelPower, 0, getMaxScroll());
+            startAnimation();
+        },
+        { passive: false }
+    );
+
+    window.addEventListener("resize", function () {
+        targetY = clamp(targetY, 0, getMaxScroll());
+        currentY = clamp(currentY, 0, getMaxScroll());
+    });
+
+    window.addEventListener("scroll", function () {
+        if (rafId) return;
+        currentY = window.scrollY || scroller.scrollTop || 0;
+        targetY = currentY;
+    });
+
+    window.addEventListener("keydown", function () {
+        stopAnimation();
+        currentY = window.scrollY || scroller.scrollTop || 0;
+        targetY = currentY;
     });
 })();
 </script>

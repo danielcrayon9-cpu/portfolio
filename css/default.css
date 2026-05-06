@@ -22,7 +22,7 @@ time, mark, audio, video {
 	font-size:14px;
 	font-family:'Pretendard', '맑은 고딕', Dotum, '돋움', AppleSDGothicNeo, arial, sans-serif;
 	vertical-align:baseline;
-	letter-spacing:1;
+	letter-spacing:0;
 	font-style:normal;
 	box-sizing: border-box;
 }

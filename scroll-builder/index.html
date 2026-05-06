@@ -5,12 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@47,400,0,0">
 <style>
 :root{--bg:#F9F9F8;--text:#111;--dim:#aaa;--light:#ccc;--border:rgba(0,0,0,0.04);--font:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font)}
 body{overflow-y:auto}
+body.index-menu-open{overflow:hidden}
 body::-webkit-scrollbar{width:0}
+.index-menu{position:fixed;top:1rem;left:1rem;z-index:10050}
+.index-menu__toggle{position:relative;z-index:10052;display:flex;align-items:center;justify-content:center;width:4rem;height:4rem;color:#000;background:transparent;text-decoration:none;transition:color .25s ease}
+.index-menu.is-open .index-menu__toggle{color:#000}
+.index-menu__toggle .material-symbols-outlined{font-family:"Material Symbols Outlined";font-size:47px;font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:"liga";-webkit-font-feature-settings:"liga";-webkit-font-smoothing:antialiased}
+.index-menu>ul{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10051;display:none;width:100%;height:100%;margin:0;padding:8rem 2.5rem 2.5rem;box-sizing:border-box;background:#fff;list-style:none}
+.index-menu.is-open>ul{display:block}
+.index-menu>ul li{display:block}
+.index-menu>ul li:first-child{}
+.index-menu>ul li a{display:block;padding:1.5rem 3rem;color:#000;font-size:clamp(2.5rem,7vw,5.5rem);font-weight:500;line-height:1;text-decoration:none;transition:color .3s ease,background .3s ease}
+.index-menu>ul li a:hover{color:#fff;background:#000}
+.blind{position:absolute;overflow:hidden;width:1px;height:1px;margin:-1px;padding:0;border:0;clip:rect(0,0,0,0)}
 .vc{display:flex;min-height:100%}
 .vl{width:40%;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:flex-end;padding-right:4rem}
 .yd{position:relative;height:10rem;display:flex;align-items:center;justify-content:flex-end;clip-path:inset(0 -200% 0 -200%)}
@@ -39,19 +52,43 @@ body::-webkit-scrollbar{width:0}
 @keyframes yp{0%,100%{opacity:1}50%{opacity:.5}}
 .td:hover .tdy{color:rgba(0,0,0,0.6)}
 .td.passed:hover .tdy{color:#fff}
-.select-type-link{position:fixed;top:10px;left:10px;z-index:10050;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#3a3a3a;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.1);padding:5px 10px;border-radius:999px;box-shadow:0 1px 5px rgba(0,0,0,.08);transition:color .2s,border-color .2s,background .2s,box-shadow .2s}
-.select-type-link:hover{color:#111;border-color:rgba(0,0,0,.18);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 @media(max-width:1000px){.vc{flex-direction:column}.vl{width:100%;height:auto;padding:2rem 1.5rem 1rem;justify-content:center;position:sticky;top:0;background:var(--bg);z-index:10}.yd{width:100%;height:5rem;justify-content:center}.yr{width:100%;justify-content:center}.yt{font-size:4rem;right:0;left:0;text-align:center}.vr{width:100%;padding:1rem 1.5rem 40vh}.ygl{padding-top:2rem}.vi{padding:1.2rem 0}.it{font-size:1.05rem}.tn{display:none}}
 </style>
 </head>
 <body>
-<a class="select-type-link" href="../index.html">Main</a>
+<div class="index-menu">
+<a href="#" class="index-menu__toggle" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">menu</span><span class="blind">메뉴 열기</span></a>
+<ul>
+<li><a href="../index.html">Intro</a></li>
+<li><a href="../pic-upload/index.html">Portfolio</a></li>
+<li><a href="../scroll-builder/index.html">Projects for year</a></li>
+<li><a href="../career/index.html">Profile</a></li>
+</ul>
+</div>
 <div class="vc">
 <div class="vl"><div class="yd"><div class="yr" id="yr"></div></div></div>
 <div class="vr" id="vr"></div>
 <div class="tn" id="tn"></div>
 </div>
 <script>
+(function(){
+var menu=document.querySelector('.index-menu');
+var toggle=menu&&menu.querySelector('.index-menu__toggle');
+var icon=toggle&&toggle.querySelector('.material-symbols-outlined');
+var label=toggle&&toggle.querySelector('.blind');
+if(!menu||!toggle||!icon)return;
+function setMenuOpen(isOpen){
+menu.classList.toggle('is-open',isOpen);
+document.body.classList.toggle('index-menu-open',isOpen);
+toggle.setAttribute('aria-expanded',isOpen?'true':'false');
+icon.textContent=isOpen?'close':'menu';
+if(label)label.textContent=isOpen?'메뉴 닫기':'메뉴 열기';
+}
+toggle.addEventListener('click',function(e){e.preventDefault();setMenuOpen(!menu.classList.contains('is-open'))});
+menu.querySelectorAll('ul a').forEach(function(link){link.addEventListener('click',function(){setMenuOpen(false)})});
+window.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('is-open')){setMenuOpen(false);toggle.focus()}});
+})();
+
 var P=[{"year":2026,"title":"디지털혁신실 통합운영","client":"한국은행"},{"year":2025,"title":"부동산통계정보시스템(R-ONE) 고도화","client":"한국부동산원"},{"year":2025,"title":"한국부동산테크 홈페이지 고도화","client":"한국부동산원"},{"year":2025,"title":"의안정보시스템 홈페이지, 모바일앱","client":"국회사무처"},{"year":2025,"title":"SPRI 소프트웨어 통계 시스템","client":"소프트웨어협회"},{"year":2025,"title":"국회뉴스 ON 홈페이지","client":"국회사무처"},{"year":2024,"title":"한화큐셀 물류정보화시스템","client":"한화시스템"},{"year":2024,"title":"한국은행 위조화폐관리시스템","client":"한국은행"},{"year":2024,"title":"국립중앙의료원 아이안심톡","client":"국립중앙의료원"},{"year":2024,"title":"탄자니아(잔지바르) 통계 DB서비스 시스템 구축","client":"정보통신부"},{"year":2023,"title":"대한민국국회 국/영문 홈페이지, 모바일앱","client":"국회사무처"},{"year":2023,"title":"대한민국어린이국회","client":"국회사무처"},{"year":2023,"title":"국회사무처 국/영문 홈페이지","client":"국회사무처"},{"year":2023,"title":"국회상임위원회 및 특별위원회 홈페이지","client":"국회사무처"},{"year":2023,"title":"국민동의청원 홈페이지","client":"국회사무처"},{"year":2023,"title":"국회박물관 국/영문 홈페이지","client":"국회사무처"},{"year":2023,"title":"국회통합예약 홈페이지","client":"국회사무처"},{"year":2023,"title":"국회의정연수원 홈페이지","client":"국회사무처"},{"year":2023,"title":"한국은행 스냅샷 홈페이지","client":"한국은행"},{"year":2023,"title":"경기도청 경기데이터드림","client":"경기도청"},{"year":2022,"title":"국회입법예고시스템","client":"국회사무처"},{"year":2022,"title":"공공보건의료지원단 시립병원 통계시스템","client":"서울특별시"},{"year":2022,"title":"환경통계정보시스템 고도화","client":"기후에너지환경부"},{"year":2022,"title":"국립중앙의료원 응급의료통계포털","client":"국립중앙의료원"},{"year":2022,"title":"형사사법통계 DB구축사업","client":"한국형사정책연구원"},{"year":2022,"title":"주택금융통계시스템(HOUSTATS) 고도화","client":"HF주택금융공사"},{"year":2022,"title":"보훈데이터 분석 및 활용 플랫폼","client":"국가보훈처"},{"year":2021,"title":"국회 지능형 입법정보서비스 2단계 구축","client":"국회사무처"},{"year":2021,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2021,"title":"환경통계정보시스템 재구축 2차","client":"기후에너지환경부"},{"year":2020,"title":"국회 헌정포털","client":"국회사무처"},{"year":2020,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2020,"title":"환경통계정보시스템 재구축 1차","client":"기후에너지환경부"},{"year":2019,"title":"열린국회정보 시스템","client":""},{"year":2019,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2018,"title":"국회예산처 재정경제통계시스템(Nabostats)","client":"국회예산처"},{"year":2018,"title":"광명나눔데이터광장 통계포털","client":"광명시청"},{"year":2018,"title":"주택금융통계시스템","client":"HF주택금융공사"},{"year":2018,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2017,"title":"디지털예산회계시스템 개선 및 열린재정/재정분석시스템 고도화","client":"한국재정정보원"},{"year":2017,"title":"차세대 응급의료정보망 구축 3차","client":"국립중앙의료원"},{"year":2017,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2016,"title":"재난안전데이터포털","client":"국민안전처"},{"year":2016,"title":"응급의료정보망 구축 2차","client":"국립중앙의료원"},{"year":2016,"title":"안산시 공공데이터 제공시스템 확대","client":"안산시청"},{"year":2015,"title":"응급의료 데이터 모니터링 시스템","client":"국립중앙의료원"},{"year":2015,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2014,"title":"통합재정정보 공개시스템","client":"기획재정부"},{"year":2014,"title":"범죄통계포털 CCJS 운영 및 개선","client":"한국형사정책연구원"},{"year":2014,"title":"국가에너지통계 종합정보시스템(KESIS) 4차","client":"에너지경제연구원"},{"year":2013,"title":"행정데이터 통합 및 열린데이터광장 확장(통합)","client":"서울시청"},{"year":2013,"title":"한국은행 채용시스템","client":"한국은행"},{"year":2013,"title":"범죄통계포털 CCJS 홈페이지 개선","client":"한국형사정책연구원"},{"year":2013,"title":"키움증권 원장 차세대 구축","client":"키움증권"},{"year":2012,"title":"국가에너지통계 종합정보시스템(KESIS) 3차 고도화","client":"에너지경제연구원"},{"year":2012,"title":"서울시청 행정데이터 통합 및 열린데이터광장 확장","client":"서울시청"},{"year":2011,"title":"경제통계시스템(ECOS) 고도화","client":"한국은행"},{"year":2011,"title":"온라인총조사 고도화","client":"에너지경제연구원"},{"year":2011,"title":"통합전략경영시스템(CRM부문)","client":"공무원연금공단"},{"year":2010,"title":"국가에너지통계 종합정보시스템 DW 및 포털 고도화","client":"에너지경제연구원"},{"year":2010,"title":"데이터품질관리시스템","client":"서울시청"},{"year":2010,"title":"대한민국포털 고도화","client":"행안부"},{"year":2009,"title":"인천국제공항공사 ITSM 시스템 고도화","client":"인천국제공항공사"},{"year":2009,"title":"국민체육진흥공단 경륜운영본부 SPEEDOM 스크린 UI 개선","client":"국민체육진흥공단"},{"year":2008,"title":"아윌패스 포털 및 계열사 홈페이지 리뉴얼","client":"아윌패스"},{"year":2008,"title":"제니스 아카데미 홈페이지","client":"아윌패스"},{"year":2008,"title":"잉글리쉬패스 홈페이지 리뉴얼","client":"아윌패스"},{"year":2007,"title":"TBS교통방송 포털 고도화","client":"TBS교통방송"},{"year":2007,"title":"서울시 강동구청 청소년 홈페이지","client":"강동구청"},{"year":2007,"title":"(주)아이티사룩스 국/영문 홈페이지","client":"(주)아이티사룩스"},{"year":2007,"title":"(주)아이티사룩스 IPTV UI 디자인","client":"(주)아이티사룩스"},{"year":2006,"title":"서울시 광진구청 포털 고도화","client":"광진구청"},{"year":2006,"title":"서울시 강서구청 포털 고도화","client":"강서구청"},{"year":2006,"title":"서울시 양천구청 장애인/노인 홈페이지","client":"양천구청"},{"year":2006,"title":"부산시청 홈페이지","client":"부산시청"},{"year":2005,"title":"비상기획위원회 홈페이지","client":"비상기획위원회"},{"year":2005,"title":"대구교육청 홈페이지","client":"대구교육청"},{"year":2004,"title":"상가/용지 인터넷 청약 시스템","client":"대한주택공사"},{"year":2004,"title":"환경과학기술연구소 홈페이지","client":"환경과학기술연구소"},{"year":2004,"title":"연합뉴스 홈페이지 배너 및 지면광고","client":"연합뉴스"},{"year":2003,"title":"관동대학교 입시종합정보시스템","client":"관동대학교"},{"year":2002,"title":"인천정유 홈페이지 리뉴얼","client":"인천정유"},{"year":2002,"title":"(주)종근당제약 다이어트 홈페이지","client":"(주)종근당제약"},{"year":2002,"title":"우리신용정보 실시간 은행정보조회 시스템","client":"우리신용정보"},{"year":2001,"title":"(주)세계사이버기원 홈페이지","client":"(주)세계사이버기원"},{"year":2001,"title":"Warranty Information System","client":"현대전자"},{"year":2001,"title":"Compaq Online Brochure","client":"Compaq"},{"year":2001,"title":"Compaq 서버 홍보사이트","client":"Compaq"},{"year":2000,"title":"한전KDN 종합정보시스템","client":"한전KDN"},{"year":2000,"title":"(주)세방여행사 홈페이지","client":"(주)세방여행사"}];
 var cY=null;
 function render(){

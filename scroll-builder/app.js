@@ -484,12 +484,24 @@ exportBtn.addEventListener('click', () => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@47,400,0,0">
 <style>
 :root{--bg:#F9F9F8;--text:#111;--dim:#aaa;--light:#ccc;--border:rgba(0,0,0,0.04);--font:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font)}
 body{overflow-y:auto}
+body.index-menu-open{overflow:hidden}
 body::-webkit-scrollbar{width:0}
+.index-menu{position:fixed;top:2.5rem;left:2.5rem;z-index:10050}
+.index-menu__toggle{position:relative;z-index:10052;display:flex;align-items:center;justify-content:center;width:4rem;height:4rem;color:#000;background:transparent;text-decoration:none;transition:color .25s ease}
+.index-menu.is-open .index-menu__toggle{color:#000}
+.index-menu__toggle .material-symbols-outlined{font-family:"Material Symbols Outlined";font-size:47px;font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:"liga";-webkit-font-feature-settings:"liga";-webkit-font-smoothing:antialiased}
+.index-menu>ul{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10051;display:none;width:100%;height:100%;margin:0;padding:8rem 2.5rem 2.5rem;box-sizing:border-box;background:#fff;list-style:none}
+.index-menu.is-open>ul{display:block}
+.index-menu>ul li{display:block;border-bottom:1px solid rgba(0,0,0,.12)}
+.index-menu>ul li:first-child{border-top:1px solid rgba(0,0,0,.12)}
+.index-menu>ul li a{display:block;padding:1.5rem 0;color:#000;font-size:clamp(2.5rem,7vw,6.5rem);font-weight:900;line-height:1;letter-spacing:-.06em;text-decoration:none}
+.blind{position:absolute;overflow:hidden;width:1px;height:1px;margin:-1px;padding:0;border:0;clip:rect(0,0,0,0)}
 .vc{display:flex;min-height:100%}
 .vl{width:40%;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:flex-end;padding-right:4rem}
 .yd{position:relative;height:10rem;display:flex;align-items:center;justify-content:flex-end;clip-path:inset(0 -200% 0 -200%)}
@@ -518,19 +530,43 @@ body::-webkit-scrollbar{width:0}
 @keyframes yp{0%,100%{opacity:1}50%{opacity:.5}}
 .td:hover .tdy{color:rgba(0,0,0,0.6)}
 .td.passed:hover .tdy{color:#fff}
-.select-type-link{position:fixed;top:10px;left:10px;z-index:10050;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#3a3a3a;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.1);padding:5px 10px;border-radius:999px;box-shadow:0 1px 5px rgba(0,0,0,.08);transition:color .2s,border-color .2s,background .2s,box-shadow .2s}
-.select-type-link:hover{color:#111;border-color:rgba(0,0,0,.18);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 @media(max-width:1000px){.vc{flex-direction:column}.vl{width:100%;height:auto;padding:2rem 1.5rem 1rem;justify-content:center;position:sticky;top:0;background:var(--bg);z-index:10}.yd{width:100%;height:5rem;justify-content:center}.yr{width:100%;justify-content:center}.yt{font-size:4rem;right:0;left:0;text-align:center}.vr{width:100%;padding:1rem 1.5rem 40vh}.ygl{padding-top:2rem}.vi{padding:1.2rem 0}.it{font-size:1.05rem}.tn{display:none}}
 </style>
 </head>
 <body>
-<a class="select-type-link" href="../index.html">Select Type</a>
+<div class="index-menu">
+<a href="#" class="index-menu__toggle" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">menu</span><span class="blind">메뉴 열기</span></a>
+<ul>
+<li><a href="../index.html">Intro</a></li>
+<li><a href="../pic-upload/index.html">Portfolio</a></li>
+<li><a href="../scroll-builder/index.html">Projects for year</a></li>
+<li><a href="../career/index.html">Profile</a></li>
+</ul>
+</div>
 <div class="vc">
 <div class="vl"><div class="yd"><div class="yr" id="yr"></div></div></div>
 <div class="vr" id="vr"></div>
 <div class="tn" id="tn"></div>
 </div>
 <script>
+(function(){
+var menu=document.querySelector('.index-menu');
+var toggle=menu&&menu.querySelector('.index-menu__toggle');
+var icon=toggle&&toggle.querySelector('.material-symbols-outlined');
+var label=toggle&&toggle.querySelector('.blind');
+if(!menu||!toggle||!icon)return;
+function setMenuOpen(isOpen){
+menu.classList.toggle('is-open',isOpen);
+document.body.classList.toggle('index-menu-open',isOpen);
+toggle.setAttribute('aria-expanded',isOpen?'true':'false');
+icon.textContent=isOpen?'close':'menu';
+if(label)label.textContent=isOpen?'메뉴 닫기':'메뉴 열기';
+}
+toggle.addEventListener('click',function(e){e.preventDefault();setMenuOpen(!menu.classList.contains('is-open'))});
+menu.querySelectorAll('ul a').forEach(function(link){link.addEventListener('click',function(){setMenuOpen(false)})});
+window.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('is-open')){setMenuOpen(false);toggle.focus()}});
+})();
+
 var P=${dataStr};
 var cY=null;
 function render(){
