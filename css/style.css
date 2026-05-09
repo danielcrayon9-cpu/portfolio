@@ -217,10 +217,15 @@ body.index-menu-open{
 .user_en{font-size:1.125rem;line-height:1.2;margin:1.875rem 0 0 0;font-weight: 200;}
 .user_en *{font-size:1.125rem;font-weight: 200;}
 
-.user_pic_outer{
+.ux-page-link-wrap{
+	margin-top:8rem;
+}
+
+.index2-page .user_experience > div.user_pic_outer{
 	overflow:hidden;
 	width:100%;
 	max-width:100%;
+	margin:5.625rem 0;
 }
 
 .user_pic{
@@ -504,15 +509,15 @@ body.index-menu-open{
 .index2-page .user_experience.ux-revealed .user_en .ux-line:nth-child(2){transition-delay:1.16s;}
 .index2-page .user_experience.ux-revealed .user_en .ux-line:nth-child(3){transition-delay:1.4s;}
 
+.index2-page .user_experience.ux-revealed .ux-page-link-wrap{transition-delay:1.68s;}
+
 .index2-page .user_experience.ux-revealed .user_pic_row:first-child img{
-	transition-delay:1.72s;
+	transition-delay:2s;
 }
 
 .index2-page .user_experience.ux-revealed .user_pic_row:nth-child(2) img{
-	transition-delay:2.05s;
+	transition-delay:2.33s;
 }
-
-.index2-page .user_experience.ux-revealed .ux-page-link-wrap{transition-delay:3s;}
 
 @media (prefers-reduced-motion: reduce){
 	.index2-page .user_experience .ux-line,
@@ -810,8 +815,13 @@ body.index-menu-open{
 }
 
 @media (max-width:640px){
+	.index-menu{
+		top:0.75rem;
+		left:0.75rem;
+	}
+
 	.slogan{
-		padding:0 1.25rem;
+		padding:6rem 1.25rem 2rem;
 	}
 
 	.timeline_line{
@@ -841,6 +851,10 @@ body.index-menu-open{
 	}
 
 	.user_experience > div{
+		margin:3rem 0;
+	}
+
+	.index2-page .user_experience > div.user_pic_outer{
 		margin:3rem 0;
 	}
 
@@ -966,6 +980,10 @@ body.index-menu-open{
 	}
 
 	.user_experience > div{
+		margin:2rem 0;
+	}
+
+	.index2-page .user_experience > div.user_pic_outer{
 		margin:2rem 0;
 	}
 

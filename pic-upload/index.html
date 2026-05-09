@@ -16,7 +16,7 @@
         .portfolio-grid { margin: 0 auto; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; grid-auto-rows: 10px; align-items: start; }
         @media (max-width: 1200px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 900px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(1, 1fr); } }
+        @media (max-width: 600px) { body { padding-top: 6rem; } .portfolio-grid { grid-template-columns: repeat(1, 1fr); } }
         .grid-item { position: relative; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .grid-item.hidden { display: none !important; }
         .grid-item.visible { opacity: 1; transform: translateY(0); }
@@ -57,6 +57,7 @@
         .index-menu > ul li a { display: block; padding: 1.5rem 3rem; color: #000; font-size: clamp(2.5rem, 7vw, 5.5rem); font-weight: 500; line-height: 1; text-decoration: none; transition: color 0.3s ease, background 0.3s ease; }
         .index-menu > ul li a:hover { color: #fff; background: #000; }
         .blind { position: absolute; overflow: hidden; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; clip: rect(0, 0, 0, 0); }
+        @media (max-width: 600px) { .index-menu { top: .75rem; left: .75rem; } }
     </style>
 </head>
 <body>

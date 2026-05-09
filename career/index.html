@@ -19,7 +19,6 @@
     .index-menu>ul{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10051;display:none;width:100%;height:100%;margin:0;padding:8rem 2.5rem 2.5rem;box-sizing:border-box;background:#fff;list-style:none}
     .index-menu.is-open>ul{display:block}
     .index-menu>ul li{display:block}
-    .index-menu>ul li:first-child{}
     .index-menu>ul li a{display:block;padding:1.5rem 3rem;color:#000;font-size:clamp(2.5rem,7vw,5.5rem);font-weight:500;line-height:1;text-decoration:none;transition:color .3s ease,background .3s ease}
     .index-menu>ul li a:hover{color:#fff;background:#000}
     .blind{position:absolute;overflow:hidden;width:1px;height:1px;margin:-1px;padding:0;border:0;clip:rect(0,0,0,0)}
@@ -37,10 +36,17 @@
     .career-list li{margin:.32rem 0;font-size:1rem;line-height:1.55;color:#222}
     .career-group{margin-top:.45rem}
     .career-group-title{font-size:.92rem;font-weight:700;margin-bottom:.35rem;color:var(--text)}
+    @media(max-width:1250px){
+    .page{padding-left:6rem}
+    }
     @media(max-width:1100px){
     :root{--col-left:minmax(0,1fr);--gap:0.5rem}
     .sec{grid-template-columns:1fr}
     .sec-title{padding-bottom:0}
+    }
+    @media(max-width:640px){
+    .index-menu{top:.75rem;left:.75rem}
+    .page{padding:6rem 1.25rem 4rem}
     }
 </style>
 </head>
@@ -75,13 +81,44 @@ window.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classLis
 })();
 
 var SECTIONS=[
-{left:'PROFESSIONAL PROFILE',blocks:['<p class="career-p">공공기관 디지털 서비스 및 통계 플랫폼 구축 전문가 (20+ Years Experience)</p><p class="career-p dim">국회, 한국은행, 중앙부처, 지방자치단체 등 국가 핵심기관의 디지털 서비스 구축 및 운영 프로젝트를 20년 이상 수행해 온 UI/UX 디자인, 반응형 웹 퍼블리싱, 웹 접근성 전문가입니다.</p><p class="career-p dim">특히 공공 데이터 플랫폼, 통계 시스템, 행정 서비스 포털 구축 프로젝트에 특화된 경험을 보유하고 있으며, 대규모 공공 시스템에서 UI/UX 설계, 웹 접근성 표준 구축, 서비스 운영 최적화를 수행해 왔습니다.</p><p class="career-p dim">다수의 공공기관 시스템에서 KWCAG 기반 웹 접근성 인증을 획득하며 접근성 설계 및 품질 관리 역량을 축적했습니다.</p>']},
-{left:'CORE COMPETENCIES',blocks:['<div class="career-group"><p class="career-group-title">공공기관 디지털 서비스 구축</p><ul class="career-list"><li>국회, 한국은행, 중앙부처 등 국가 핵심기관 시스템 구축</li><li>대규모 행정 서비스 및 공공 포털 UI/UX 설계</li></ul></div><div class="career-group"><p class="career-group-title">통계 및 데이터 플랫폼</p><ul class="career-list"><li>국가 통계 시스템 UI/UX 설계</li><li>데이터 시각화 및 통계 서비스 인터페이스 구축</li></ul></div><div class="career-group"><p class="career-group-title">프론트엔드 퍼블리싱</p><ul class="career-list"><li>HTML5 / CSS3 기반 시맨틱 마크업</li><li>반응형 웹 퍼블리싱</li><li>웹 접근성 기반 UI 구현</li></ul></div><div class="career-group"><p class="career-group-title">웹 접근성 및 표준화</p><ul class="career-list"><li>KWCAG 2.1 기반 접근성 설계</li><li>공공기관 웹 접근성 인증 프로젝트 수행</li><li>접근성 UI 컴포넌트 및 마크업 표준 구축</li></ul></div><div class="career-group"><p class="career-group-title">대형 장기 운영 시스템</p><ul class="career-list"><li>장기 운영 공공 시스템 UI/UX 개선</li><li>서비스 운영 효율성 및 유지보수 최적화</li></ul></div>']},
-{left:'MAJOR CLIENTS',blocks:['<p class="career-p dim">대한민국 국회 / 한국은행 / 서울특별시 / 경기도청 / 환경부 / 행정안전부 / HF한국주택금융공사 / 한국부동산원 / 국립중앙의료원 / 한국형사정책연구원 / 에너지경제연구원 / 국가보훈처 / 한국바이오협회 / 기획재정부 / TBS교통방송</p>']},
-{left:'REPRESENTATIVE EXPERIENCE',blocks:['<p class="career-h">대한민국 국회 디지털 서비스 구축 및 운영</p><p class="career-p"><strong>기간</strong> · 2024 ~ 2025</p><p class="career-p"><strong>Role</strong> · UI/UX 디자인 및 퍼블리싱 총괄, 웹 접근성 설계 및 표준 구축</p><p class="career-p"><strong>Contribution</strong> · 공공 웹 접근성 표준 기반 UI 컴포넌트 설계, 공통 UI/UX 가이드 체계 구축, 디자인·개발·기획 조직 간 품질 관리</p><p class="career-p"><strong>Achievement</strong> · 국회 주요 서비스 웹 접근성 인증 획득, 공통 UI/UX 가이드 도입으로 서비스 일관성 확보, 접근성 이슈 감소 및 유지보수 효율 향상</p>']},
-{left:'KEY PROJECTS',blocks:['<div class="career-group"><p class="career-group-title">1. 국회 시스템</p><p class="career-p dim">국회 주요 서비스 UI/UX 및 퍼블리싱 총괄 — 국회 대표 홈페이지(국문·영문·모바일), 의안정보시스템, 국민동의청원, 입법예고, 국회 통합예약, 국회뉴스ON, 헌정포털, 열린국회정보, 국회의정연수원, 국회 AI 의정지원 플랫폼</p></div><div class="career-group"><p class="career-group-title">2. 금융 및 경제 통계 시스템</p><p class="career-p dim">한국은행 스냅샷, ECOS, 채용시스템, DAS, HF 주택금융통계시스템, 한국부동산원 R-ONE, 에너지경제연구원 KESIS</p></div><div class="career-group"><p class="career-group-title">3. 공공 데이터 플랫폼</p><p class="career-p dim">서울시 열린데이터광장, 경기데이터드림, 환경통계정보시스템, 재난안전 데이터 포털</p></div><div class="career-group"><p class="career-group-title">4. 공공 의료 데이터 시스템</p><p class="career-p dim">국립중앙의료원 응급의료정보망, 응급의료 통계 포털, 시립병원 통계 시스템, 아이안심톡</p></div>']},
-{left:'WEB ACCESSIBILITY CERTIFICATION PROJECTS',blocks:['<p class="career-p dim">다수 공공기관 서비스에서 웹 접근성 품질인증 획득</p><p class="career-h" style="margin-top:1rem">대표 사이트</p><ul class="career-list"><li>국회 대표 홈페이지, 의안정보시스템, 입법예고 시스템</li><li>NABOSTATS 재정경제통계, HF 주택금융통계 시스템</li><li>환경부 환경통계포털, 한국부동산원 부동산 통계 시스템</li><li>국립중앙의료원 아이안심톡, 경기데이터드림, CCJS 범죄통계포털</li></ul>']},
-{left:'CAREER HIGHLIGHTS',blocks:['<ul class="career-list"><li>공공기관 디지털 서비스 구축 20년 이상 경험</li><li>국회 및 국가 통계 시스템 다수 구축</li><li>웹 접근성 인증 프로젝트 다수 수행</li><li>대형 공공 데이터 플랫폼 UI/UX 설계 경험</li></ul>']}
+{left:'PROFESSIONAL PROFILE',blocks:[
+'<p class="career-p">공공기관 디지털 서비스 및 통계 플랫폼 구축 전문가 (20+ Years Experience)</p>',
+'<p class="career-p dim">국회, 한국은행, 중앙부처, 지방자치단체 등 국가 핵심기관의 디지털 서비스 구축 및 운영 프로젝트를 20년 이상 수행해 온 UI/UX 디자인, 반응형 웹 퍼블리싱, 웹 접근성 전문가입니다.</p>',
+'<p class="career-p dim">특히 공공 데이터 플랫폼, 통계 시스템, 행정 서비스 포털 구축 프로젝트에 특화된 경험을 보유하고 있으며, 대규모 공공 시스템에서 통합 디자인 시스템(Design System) 구축, 모듈형 UI 컴포넌트 설계, 웹 접근성 표준 구축, 서비스 운영 최적화를 수행해 왔습니다.</p>',
+'<p class="career-p dim">다수의 공공기관 시스템에서 KWCAG 기반 웹 접근성 인증을 획득하며 접근성 설계 및 품질 관리 역량을 축적했으며, 일관된 UI/UX 가이드라인과 컴포넌트화를 통해 디자인-기획-개발 조직 간의 협업 생산성을 극대화하는 데 기여하고 있습니다.</p>'
+]},
+{left:'CORE COMPETENCIES',blocks:[
+'<div class="career-group"><p class="career-group-title">디자인 시스템 및 컴포넌트 UI 구축 (New/Updated)</p><ul class="career-list"><li>대형 공공 서비스에 최적화된 맞춤형 통합 디자인 시스템(Design System) 설계</li><li>재사용성과 확장성이 높은 모듈형 UI 컴포넌트 라이브러리 구축</li><li>디자인 토큰(Design Token) 및 공통 스타일 가이드 정의로 서비스 일관성 확보</li><li>개발자 및 기획자와의 효율적인 협업을 위한 UI 가이드라인 문서화</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">공공기관 디지털 서비스 구축</p><ul class="career-list"><li>국회, 한국은행, 중앙부처 등 국가 핵심기관 시스템 구축</li><li>대규모 행정 서비스 및 공공 포털 UI/UX 설계</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">통계 및 데이터 플랫폼</p><ul class="career-list"><li>국가 통계 시스템 UI/UX 설계</li><li>데이터 시각화 및 통계 서비스 인터페이스 구축</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">프론트엔드 퍼블리싱</p><ul class="career-list"><li>HTML5 / CSS3 기반 시맨틱 마크업</li><li>반응형 웹 퍼블리싱</li><li>웹 접근성 기반 UI 구현</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">웹 접근성 및 표준화</p><ul class="career-list"><li>KWCAG 2.1 기반 접근성 설계</li><li>공공기관 웹 접근성 인증 프로젝트 수행</li><li>접근성 UI 컴포넌트 및 마크업 표준 구축</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">대형 장기 운영 시스템</p><ul class="career-list"><li>장기 운영 공공 시스템 UI/UX 개선</li><li>서비스 운영 효율성 및 유지보수 최적화</li></ul></div>'
+]},
+{left:'MAJOR CLIENTS',blocks:[
+'<p class="career-p dim">대한민국 국회 / 한국은행 / 서울특별시 / (주)한화 / 경기도청 / 환경부 / 행정안전부 / HF한국주택금융공사 / 한국부동산원 / 국립중앙의료원 / 한국형사정책연구원 / 에너지경제연구원 / 국가보훈처 / 한국바이오협회 / 기획재정부 / TBS교통방송</p>'
+]},
+{left:'REPRESENTATIVE EXPERIENCE',blocks:[
+'<p class="career-h">대한민국 국회 디지털 서비스 구축 및 운영</p>',
+'<div class="career-group"><p class="career-group-title">기간</p><p class="career-p">2023 ~ 2025</p></div>',
+'<div class="career-group"><p class="career-group-title">Role</p><ul class="career-list"><li>UI/UX 디자인 및 퍼블리싱 총괄</li><li>웹 접근성 설계 및 표준 구축</li><li>국회 통합 디자인 시스템 및 공통 UI 컴포넌트 라이브러리 구축</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">Contribution</p><ul class="career-list"><li>국회 주요 서비스에 범용적으로 적용 가능한 UI/UX 디자인 시스템 설계</li><li>데이터 테이블, 폼(Form), 버튼 등 재사용성이 높은 접근성 기반 UI 컴포넌트 자산화</li><li>공통 UI/UX 가이드 체계 구축 및 배포</li><li>디자인·개발·기획 조직 간 품질 관리 및 협업 프로세스 효율화</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">Achievement</p><ul class="career-list"><li>국회 주요 서비스 웹 접근성 인증 획득</li><li>컴포넌트 기반 UI 설계를 통한 신규 서비스 구축 기간 단축 및 리소스 절감</li><li>공통 UI/UX 가이드 도입으로 서비스 일관성 확보</li><li>접근성 이슈 감소 및 유지보수 효율 향상</li></ul></div>'
+]},
+{left:'KEY PROJECTS',blocks:[
+'<div class="career-group"><p class="career-group-title">1. 국회 시스템(국회 주요 서비스 UI/UX 및 퍼블리싱 총괄)</p><ul class="career-list"><li>국회 대표 홈페이지 (국문 / 영문 / 모바일)</li><li>의안정보시스템</li><li>국민동의청원 시스템</li><li>입법예고 시스템</li><li>국회 통합예약 시스템</li><li>국회뉴스ON</li><li>헌정포털</li><li>열린국회정보</li><li>국회의정연수원</li><li>국회 AI 의정지원 플랫폼</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">2. 금융 및 경제 통계 시스템</p><ul class="career-list"><li>한국은행 스냅샷</li><li>한국은행 경제통계시스템 (ECOS)</li><li>한국은행 채용시스템</li><li>한국은행 정보분석시스템 (DAS)</li><li>HF 한국주택금융공사 주택금융통계시스템</li><li>한국부동산원 부동산통계시스템 (R-ONE)</li><li>에너지경제연구원 국가에너지통계시스템 (KESIS)</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">3. 공공 데이터 플랫폼</p><ul class="career-list"><li>서울시 열린데이터광장</li><li>경기도 경기데이터드림</li><li>환경부 환경통계정보시스템</li><li>국민안전처 재난안전 데이터 포털</li></ul></div>',
+'<div class="career-group"><p class="career-group-title">4. 공공 의료 데이터 시스템</p><ul class="career-list"><li>국립중앙의료원 응급의료정보망</li><li>응급의료 통계 포털</li><li>시립병원 통계 시스템</li><li>아이안심톡</li></ul></div>'
+]},
+{left:'WEB ACCESSIBILITY CERTIFICATION PROJECTS',blocks:[
+'<p class="career-p dim">다수 공공기관 서비스에서 웹 접근성 품질인증 획득</p>',
+'<p class="career-h" style="margin-top:1rem">대표 사이트</p>',
+'<ul class="career-list"><li>국회 대표 홈페이지</li><li>국회 의안정보시스템</li><li>국회 입법예고 시스템</li><li>NABOSTATS 재정경제통계</li><li>HF 주택금융통계 시스템</li><li>환경부 환경통계포털</li><li>한국부동산원 부동산 통계 시스템</li><li>국립중앙의료원 아이안심톡</li><li>경기데이터드림</li><li>CCJS 범죄통계포털</li></ul>'
+]},
+{left:'CAREER HIGHLIGHTS',blocks:[
+'<ul class="career-list"><li>공공기관 디지털 서비스 구축 20년 이상 경험</li><li>국회 및 국가 통계 시스템 다수 구축</li><li>웹 접근성 인증 프로젝트 다수 수행</li><li>대형 공공 데이터 플랫폼UI/UX 설계 경험</li><li>대규모 공공 시스템을 위한 맞춤형 통합 디자인 시스템 및 모듈형 UI 컴포넌트 구축 경험</li></ul>'
+]}
 ];
 var main=document.getElementById('main');
 SECTIONS.forEach(function(sec){
